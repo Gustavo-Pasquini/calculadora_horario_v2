@@ -29,14 +29,13 @@ function HorarioAdicionado(props: Props) {
         style={{ width: "300px", margin: "auto", marginBottom: "20px" }}
       >
         <div
-          className="rounded-top p-2 d-inline-flex text-bg-primary position-relative"
+          className="rounded-top p-2 d-flex text-bg-primary justify-content-between"
           style={{ width: "300px", margin: "auto" }}
         >
           <p style={{ marginBottom: "0px" }}>Horário adicionado:</p>
           <button
             type="button"
-            className="btn-close position-absolute"
-            style={{ top: "20%", right: "3%" }}
+            className="btn-close"
             aria-label="Close"
             onClick={handleOpenModal}
           />
