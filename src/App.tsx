@@ -13,7 +13,9 @@ function App() {
   const widthDimension = window.innerWidth;
 
   const handleButtonClick = (date: string, time: string, hora: string, minuto: string) => {
-    {(hora !== '00' || minuto !== '00') && setHorarios((prevHorarios) => [
+    console.log(Number.isNaN(parseInt(hora)))
+    console.log(Number.isNaN(parseInt(minuto)))
+    {(hora !== '00' || minuto !== '00') && !(Number.isNaN(parseInt(hora)) || Number.isNaN(parseInt(minuto))) && setHorarios((prevHorarios) => [
       ...prevHorarios,
       { date, time, hora, minuto }
     ])};
@@ -27,13 +29,19 @@ function App() {
 
     let horasExtras = Math.floor((parseInt(totalMinutos) + parseInt(minuto))/ 60);
 
-      setTotalMinutos(String(minutosRestantes)) 
 
-    {totalHoras === '' ?
-      setTotalHoras(String(parseInt(hora)))
-      : 
-      setTotalHoras((prev) => String(parseInt(prev) + (parseInt(hora) + horasExtras)))
-    }
+      if (!Number.isNaN(parseInt(hora)) && !Number.isNaN(parseInt(minuto))) {
+
+        setTotalMinutos(String(minutosRestantes)) 
+
+        if (totalHoras === '') {
+          setTotalHoras(String(parseInt(hora)));
+        } else {
+          setTotalHoras((prev) => 
+            String(parseInt(prev) + parseInt(hora) + horasExtras)
+          );
+        }
+      }
 
   };
 

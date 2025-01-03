@@ -6,7 +6,7 @@ interface Props {
 
 function EntradaDados(props: Props) {
 
-  let [ selectInputTime, setInputTime ] = useState('')
+  let [ selectInputTime, setInputTime ] = useState('00:00')
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputTime(event.target.value);
@@ -35,7 +35,7 @@ function EntradaDados(props: Props) {
 
         props.onButtonClick(addedDate, addedTime, newHora, newMinuto);
 
-        setInputTime("");
+        setInputTime("00:00");
       }}>
         <div className="d-block mb-5" style={{width: "250px", margin: "auto"}}>
           <div className="text-center input-group my-3">
