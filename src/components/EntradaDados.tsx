@@ -34,12 +34,17 @@ function EntradaDados(props: Props) {
         { minuto < 10 ? newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
 
         props.onButtonClick(addedDate, addedTime, newHora, newMinuto);
-        
+
+        setInputTime("");
       }}>
         <div className="d-block mb-5" style={{width: "250px", margin: "auto"}}>
           <div className="text-center input-group my-3">
             <span className="input-group-text" id="basic-addon1">Digite o tempo:</span>
-            <input type="time" className="form-control" id="EntradaHorario" 
+            <input 
+            type="time" 
+            className="form-control" 
+            id="EntradaHorario" 
+            value={selectInputTime}
               onChange={handleChange}
             />
           </div>

@@ -41,8 +41,17 @@ function App() {
     const removedHorario = horarios[index];
     setHorarios((prevHorarios) => prevHorarios.filter((_, i) => i !== index));
 
-    setTotalHoras((prev) => String(parseInt(prev) - parseInt(removedHorario.hora)));
-    setTotalMinutos((prev) => String(parseInt(prev) - parseInt(removedHorario.minuto)));
+    setTotalMinutos((prevMinutos) => {
+      const minutosAtualizados = parseInt(prevMinutos) - parseInt(removedHorario.minuto);
+  
+      if (minutosAtualizados < 0) {
+        setTotalHoras((prevHoras) => String(parseInt(prevHoras) - parseInt(removedHorario.hora) - 1));
+        return String(60 + minutosAtualizados);
+      } else {
+        setTotalHoras((prevHoras) => String(parseInt(prevHoras) - parseInt(removedHorario.hora)));
+        return String(minutosAtualizados);
+      }
+    });
   };
 
   return (
