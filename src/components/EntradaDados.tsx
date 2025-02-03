@@ -64,10 +64,6 @@ function EntradaDados(props: Props) {
   let [ usuNome, setUsuNome ] = useState('');
 
   const handleLogin = () => {
-    setUsuNome(() => {
-      const nomeUsuario = document.querySelector('#login-email') as HTMLInputElement //---Ajustar depois para pegar o Nome do cadastro !!!
-      return nomeUsuario?.value ?? '';
-    })
     props.onLogin();
     setIsLogado(true);
     setShowLogin(false);
@@ -91,6 +87,11 @@ function EntradaDados(props: Props) {
 
   const handleExit = () => {
     setIsLogado(false)
+  }
+
+
+  function handleUsuNome(usuNome: string) {
+    setUsuNome(usuNome)
   }
 
 
@@ -161,6 +162,7 @@ function EntradaDados(props: Props) {
 
       {showLogin && 
         <LoginModal
+        getUsuNome={handleUsuNome}
           onClose={handleCloseLogin}
           onConfirm={handleLogin}
         >

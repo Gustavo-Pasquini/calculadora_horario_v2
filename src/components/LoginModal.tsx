@@ -1,21 +1,49 @@
-//import { collection, getDocs } from "firebase/firestore";
-//import { db } from '../config/firestore.ts'
-//import { useEffect, useState } from "react";
+import { collection, query, where, getDocs } from "firebase/firestore"
+import { db } from '../config/firestore.ts'
+import { useState } from "react";
 
 interface Props {
   onClose: () => void;
   onConfirm: () => void;
+  getUsuNome: (usuNome: string) => void;
 }
 
 function LoginModal  (props : Props) {
 
+  const [ emailInvalido, setEmailInvalido ] = useState(false)
+  const [ senhaInvalida, setsenhaInvalida ] = useState(false)
   
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {  
-    props.onConfirm();
-    
     e.preventDefault();
     
+    const email = document.querySelector('#login-email') as HTMLInputElement;
+    const senha = document.querySelector('#login-senha') as HTMLInputElement;
+
     // Adicionar Verificação de existência e Senha correta
+    const q = query(collection(db, "usuario"), where("email", "==", email.value));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty){
+      setEmailInvalido(true);
+      return;
+    } else {
+      setEmailInvalido(false);
+    }
+
+    for (const doc of querySnapshot.docs) {
+      
+      if (doc.data().senha !== senha.value) {
+        setsenhaInvalida(true);
+        return;
+      } else {
+        setsenhaInvalida(false);
+      }
+
+      const usuNome = doc.data().nome
+      props.getUsuNome(usuNome)
+    }
+    
+    props.onConfirm();
   }
 
 
@@ -31,6 +59,18 @@ function LoginModal  (props : Props) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Login</h5>
+              { emailInvalido && 
+                <div className="warning">
+                  <img  src="src/assets/warning-sign-9769.svg"/ >
+                  <p style={{paddingRight: "5px", paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Email não cadastrado!</p>
+                </div>
+              }
+              { !(emailInvalido) && senhaInvalida && 
+                <div className="warning">
+                  <img  src="src/assets/warning-sign-9769.svg"/ >
+                  <p style={{paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Senha incorreta!</p>
+                </div>
+              }              
               <button
                 type="button"
                 className="btn-close"

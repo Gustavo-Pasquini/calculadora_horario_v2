@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firestore.ts'
 import { useState } from 'react';
 import '../global.css';
@@ -11,7 +11,8 @@ interface Props {
   
   function CadastroModal (props : Props) {
   
-    const [erroSenha, setErroSenha] = useState(false)
+    const [ erroSenha, setErroSenha ] = useState(false)
+    const [ emailExistente, setEmailExistente ] = useState(false)
 
     const handleCadastro = async (e: React.FormEvent<HTMLFormElement>) => {  
       e.preventDefault();
@@ -21,24 +22,32 @@ interface Props {
       const email = document.querySelector('#cadastro-email') as HTMLInputElement
       const senha = document.querySelector('#cadastro-senha') as HTMLInputElement
       const confSenha = document.querySelector('#cadastro-confSenha') as HTMLInputElement
-      
+
+      const q = query(collection(db, "usuario"), where("email", "==", email.value));
+      const querySnapshot = await getDocs(q);
+  
+      if (!querySnapshot.empty){
+        setEmailExistente(true);
+        return;
+      } else {
+        setEmailExistente(false);
+      }
+
       if (confSenha.value !== senha.value) {
         setErroSenha(true)
-        alert("Senhas diferentes")
         return;
       } else {
         setErroSenha(false)
       }
 
-      
       try {
-        const docRef = await addDoc(collection(db, "usuario"), {
+        await addDoc(collection(db, "usuario"), {
           nome: nome?.value ?? '',
           email: email?.value ?? '',
           senha: senha?.value ?? ''
         });
-        console.log("Foi enviado!");
-        console.log("Document written with ID: ", docRef.id);
+        //console.log("Foi enviado!");
+        //console.log("Document written with ID: ", docRef.id);
       } catch (error) {
         console.log(error);
       }
@@ -64,6 +73,12 @@ interface Props {
                 <div className="warning">
                   <img  src="src/assets/warning-sign-9769.svg"/ >
                   <p style={{paddingRight: "5px", paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Senhas diferentes!</p>
+                </div>
+                }
+                { emailExistente && 
+                <div className="warning">
+                  <img  src="src/assets/warning-sign-9769.svg"/ >
+                  <p style={{paddingRight: "5px", paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Email já cadastrado!</p>
                 </div>
                 }
                 <button
