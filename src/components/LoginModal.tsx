@@ -6,6 +6,7 @@ interface Props {
   onClose: () => void;
   onConfirm: () => void;
   getUsuNome: (usuNome: string) => void;
+  getEmail: (email: string) => void;
 }
 
 function LoginModal  (props : Props) {
@@ -41,8 +42,10 @@ function LoginModal  (props : Props) {
 
       const usuNome = doc.data().nome
       props.getUsuNome(usuNome)
+      props.getEmail(email.value)
     }
     
+
     props.onConfirm();
   }
 

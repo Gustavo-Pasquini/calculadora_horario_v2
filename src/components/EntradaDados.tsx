@@ -5,9 +5,12 @@ import '../global.css';
 import { stringToColor } from '../utils';
 
 interface Props {
-  onButtonClick: (date: string, time: string, hora: string, minuto: string) => void;
-  onLogin: () => void;
+  onButtonClick: (email: string, date: string, time: string, hora: string, minuto: string) => void;
+  onLogin: (email: string) => void;
   onCadastro: () => void;
+  getEmail: (email: string) => void;
+  setTotalHoras: (horas: string) => void;
+  setTotalMinutos: (minutos: string) => void;
 }
 
 interface PerfilProps {
@@ -16,15 +19,15 @@ interface PerfilProps {
 }
 
 export function Perfil(props: PerfilProps) {
-    const inicial = `${props.nome[0]?.toUpperCase() ?? ''}`;
+  const inicial = `${props.nome[0]?.toUpperCase() ?? ''}`;
 
-    const backgroundColor = stringToColor(props.nome);
+  const backgroundColor = stringToColor(props.nome);
 
-    const handleUserClick = () => {
-      setAjusteUsuario(!(ajusteUsuario))
-    }
+  const handleUserClick = () => {
+    setAjusteUsuario(!(ajusteUsuario))
+  }
 
-    let [ ajusteUsuario, setAjusteUsuario ] = useState(false)
+  let [ ajusteUsuario, setAjusteUsuario ] = useState(false)
 
   
   return (
@@ -61,37 +64,48 @@ function EntradaDados(props: Props) {
 
   let [ isLogado, setIsLogado ] = useState(false)
 
-  let [ usuNome, setUsuNome ] = useState('');
-
+  
   const handleLogin = () => {
-    props.onLogin();
+    props.onLogin(email);
     setIsLogado(true);
     setShowLogin(false);
   };
   
-
+  
   let [ showCadastro, setShowCadastro ] = useState(false);
-
+  
   const handleCadastroClick = () => setShowCadastro(true);
-
+  
   const handleCloseCadastro = () => setShowCadastro(false);
-
+  
   const handleCadastro = () => {
     props.onCadastro();
     setShowCadastro(false);
   };  
-
+  
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputTime(event.target.value);
   };
-
+  
   const handleExit = () => {
     setIsLogado(false)
+    setEmail('');
+    props.getEmail('');
+    props.setTotalHoras("0");
+    props.setTotalMinutos("0");
   }
+  
+  let [ usuNome, setUsuNome ] = useState('');
+  let [ email, setEmail ] = useState('');
 
-
+  
   function handleUsuNome(usuNome: string) {
     setUsuNome(usuNome)
+  }
+  
+  function handleEmail(email: string) {
+    setEmail(email);
+    props.getEmail(email);
   }
 
 
@@ -135,7 +149,7 @@ function EntradaDados(props: Props) {
         { hora   < 10 ? newHora   = '0' + String(hora)   : newHora   = String(hora) }
         { minuto < 10 ? newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
 
-        props.onButtonClick(addedDate, addedTime, newHora, newMinuto);
+        props.onButtonClick(email, addedDate, addedTime, newHora, newMinuto);
 
         setInputTime("00:00");
       }}>
@@ -162,7 +176,8 @@ function EntradaDados(props: Props) {
 
       {showLogin && 
         <LoginModal
-        getUsuNome={handleUsuNome}
+          getEmail = {handleEmail}
+          getUsuNome={handleUsuNome}
           onClose={handleCloseLogin}
           onConfirm={handleLogin}
         >
