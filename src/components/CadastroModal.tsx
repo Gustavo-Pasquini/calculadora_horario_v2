@@ -71,13 +71,13 @@ interface Props {
                 <h5 className="modal-title">Cadastro</h5>
                 { erroSenha && 
                 <div className="warning">
-                  <img  src="src/assets/warning-sign-9769.svg"/ >
+                  <img  src="/assets/warning-sign-9769.svg"/ >
                   <p style={{paddingRight: "5px", paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Senhas diferentes!</p>
                 </div>
                 }
                 { emailExistente && 
                 <div className="warning">
-                  <img  src="src/assets/warning-sign-9769.svg"/ >
+                  <img  src="/assets/warning-sign-9769.svg"/ >
                   <p style={{paddingRight: "5px", paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Email já cadastrado!</p>
                 </div>
                 }

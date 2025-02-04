@@ -43,7 +43,7 @@ export function Perfil(props: PerfilProps) {
         </div>
         <button className="btn" type="button" onClick={props.isLogado} style={{display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none"}}>
             Sair  
-            <img src="src/assets/exit-svgrepo-com.svg"/>
+            <img src="/assets/exit-svgrepo-com.svg"/>
         </button> 
       </div>
     }

@@ -64,13 +64,13 @@ function LoginModal  (props : Props) {
               <h5 className="modal-title">Login</h5>
               { emailInvalido && 
                 <div className="warning">
-                  <img  src="src/assets/warning-sign-9769.svg"/ >
+                  <img  src="/assets/warning-sign-9769.svg"/ >
                   <p style={{paddingRight: "5px", paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Email não cadastrado!</p>
                 </div>
               }
               { !(emailInvalido) && senhaInvalida && 
                 <div className="warning">
-                  <img  src="src/assets/warning-sign-9769.svg"/ >
+                  <img  src="/assets/warning-sign-9769.svg"/ >
                   <p style={{paddingLeft: "5px", display: "flex", alignContent: "center", margin: "auto"}}>Senha incorreta!</p>
                 </div>
               }              
