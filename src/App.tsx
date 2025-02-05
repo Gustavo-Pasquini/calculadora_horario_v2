@@ -8,6 +8,7 @@ import Totalizador from "./components/Totalizador";
 
 interface Horario {
   id: any;
+  observacao: string;
   email: string;
   date: string;
   time: string;
@@ -27,6 +28,10 @@ function App() {
   const handleEmail = (email: string) => {
     setEmail(email);
   };
+
+  useEffect(() => {
+    setHorarios([])
+  }, [email])
 
   // Função de login que busca os horários do banco para o email informado
   const handleLogin = async (email: string) => {
@@ -48,10 +53,11 @@ function App() {
   
       const filteredHorarios: Horario[] = querySnapshot.docs
         .map(doc => {
-          const data = doc.data() as { date?: string; time?: string; hora?: string; minuto?: string };
+          const data = doc.data() as { observacao?: string; date?: string; time?: string; hora?: string; minuto?: string };
           return { 
-            id: doc.id,  // Adiciona o ID do documento
+            id: doc.id,
             email, 
+            observacao: data.observacao ?? "",
             date: data.date ?? "", 
             time: data.time ?? "", 
             hora: data.hora ?? "", 
@@ -103,6 +109,7 @@ function App() {
 
   // Ao enviar um novo horário, atualiza o array de horários e recalcula os totais
   const handleButtonClick = async (
+    observacao: string,
     email: string,
     date: string,
     time: string,
@@ -115,6 +122,7 @@ function App() {
         if (email) {
           // Adiciona os dados ao Firestore
           const docRef = await addDoc(collection(db, "horario"), {
+            observacao: observacao ?? '',
             email: email ?? '',
             date: date ?? '',
             time: time ?? '',
@@ -125,13 +133,13 @@ function App() {
           // Atualiza o estado após o Firestore confirmar a inserção
           setHorarios((prevHorarios) => [
             ...prevHorarios,
-            { id: docRef.id, email, date, time, hora, minuto },
+            { id: docRef.id, observacao, email, date, time, hora, minuto },
           ]);
 
         } else {
           setHorarios((prevHorarios) => [
             ...prevHorarios,
-            { id: '', email, date, time, hora, minuto },
+            { id: '', observacao, email, date, time, hora, minuto },
           ]);
         }
           
@@ -152,7 +160,7 @@ function App() {
         setTotalMinutos(String(somaMinutos));
         setTotalHoras(String(somaHoras));
   
-        console.log("Horário adicionado com sucesso!");
+        //console.log("Horário adicionado com sucesso!");
       } catch (error) {
         console.error("Erro ao adicionar horário:", error);
       }
@@ -160,7 +168,7 @@ function App() {
   };
 
   const handleCadastro = () => {
-    console.log("Cadastro Realizado");
+    //console.log("Cadastro Realizado");
   };
 
   // Remoção de um horário e atualização dos totais
@@ -170,14 +178,36 @@ function App() {
       const removedHorario = horarios[index];
   
       if (!removedHorario || !removedHorario.id) {
-        console.error("Erro: ID do documento não encontrado.");
+        setHorarios((prevHorarios) =>
+        prevHorarios.filter((_, i) => i !== index)
+        );
+  
+        // Recalcula os totais após a remoção
+        let acumuladoMinutos = 0;
+        let acumuladoHoras = 0;
+    
+        horarios.forEach((h, i) => {
+          if (i !== index) {
+            acumuladoMinutos += parseInt(h.minuto);
+            acumuladoHoras += parseInt(h.hora);
+          }
+        });
+  
+        // Ajusta os minutos que ultrapassarem 60
+        const extras = Math.floor(acumuladoMinutos / 60);
+        acumuladoHoras += extras;
+        acumuladoMinutos = acumuladoMinutos % 60;
+    
+        setTotalHoras(String(acumuladoHoras));
+        setTotalMinutos(String(acumuladoMinutos));
+
         return;
       }
   
       // Remove do Firestore
       await deleteDoc(doc(db, "horario", removedHorario.id));
   
-      console.log("Horário removido do banco:", removedHorario);
+      //console.log("Horário removido do banco:", removedHorario);
   
       // Atualiza o estado removendo o item da lista
       setHorarios((prevHorarios) =>
@@ -223,6 +253,7 @@ function App() {
             {horarios.map((horario, index) => (
               <HorarioAdicionado
                 key={index}
+                observacaoAdicionada={horario.observacao}
                 addedDate={horario.date}
                 addedTime={horario.time}
                 newHora={horario.hora}
@@ -243,6 +274,7 @@ function App() {
           {horarios.map((horario, index) => (
             <HorarioAdicionado
               key={index}
+              observacaoAdicionada={horario.observacao}
               addedDate={horario.date}
               addedTime={horario.time}
               newHora={horario.hora}

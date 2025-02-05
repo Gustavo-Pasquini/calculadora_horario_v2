@@ -5,7 +5,7 @@ import '../global.css';
 import { stringToColor } from '../utils';
 
 interface Props {
-  onButtonClick: (email: string, date: string, time: string, hora: string, minuto: string) => void;
+  onButtonClick: (observacao: string, email: string, date: string, time: string, hora: string, minuto: string) => void;
   onLogin: (email: string) => void;
   onCadastro: () => void;
   getEmail: (email: string) => void;
@@ -55,6 +55,7 @@ export function Perfil(props: PerfilProps) {
 function EntradaDados(props: Props) {
 
   let [ selectInputTime, setInputTime ] = useState('00:00')
+  let [ observacao, setObservacao] = useState('')
 
   let [ showLogin, setShowLogin ] = useState(false)
 
@@ -86,6 +87,10 @@ function EntradaDados(props: Props) {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputTime(event.target.value);
   };
+
+  const handleObservacaoSubmit = (event: ChangeEvent<HTMLInputElement>) => {
+    setObservacao(event.target.value)
+  }
   
   const handleExit = () => {
     setIsLogado(false)
@@ -138,6 +143,8 @@ function EntradaDados(props: Props) {
         
         let currentDate = new Date();
 
+        let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement
+        let observacao = observacaoAdicionada?.value ?? ''
         let addedDate = currentDate.toLocaleDateString();
         let addedTime = currentDate.toLocaleTimeString();
         let hora      = parseInt(selectInputTime.slice(0, selectInputTime.indexOf(':')));
@@ -149,25 +156,41 @@ function EntradaDados(props: Props) {
         { hora   < 10 ? newHora   = '0' + String(hora)   : newHora   = String(hora) }
         { minuto < 10 ? newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
 
-        props.onButtonClick(email, addedDate, addedTime, newHora, newMinuto);
+        props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
 
         setInputTime("00:00");
+        setObservacao('')
       }}>
-        <div className="d-block mb-5" style={{width: "250px", margin: "auto"}}>
+        <div className="d-block" style={{width: "300px", margin: "auto"}}>
+          <div className="text-center input-group my-3">
+            <span className="input-group-text" id="basic-addon1">Descrição:</span>
+            <input 
+            type="text" 
+            className="form-control" 
+            id="observacao" 
+            placeholder="Descrição"
+            value={observacao}
+            onChange={handleObservacaoSubmit}
+            />
+          </div>
+        </div>
+        <div className="d-block mb-5" style={{width: "300px", margin: "auto"}}>
           <div className="text-center input-group my-3">
             <span className="input-group-text" id="basic-addon1">Digite o tempo:</span>
             <input 
-            type="time" 
-            className="form-control" 
-            id="EntradaHorario" 
-            value={selectInputTime}
+              type="time" 
+              className="form-control" 
+              id="EntradaHorario" 
               onChange={handleChange}
+              value={selectInputTime}
+              required
             />
           </div>
           <div>
             <button
               type="submit"
               className=" btn text-bg-primary"
+              style={{width: "300px", margin: "auto"}}
               >Enviar
             </button>
           </div>

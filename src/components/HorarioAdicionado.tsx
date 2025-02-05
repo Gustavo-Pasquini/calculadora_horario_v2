@@ -2,6 +2,7 @@ import { useState } from "react";
 import RemoveModal from "./RemoveModal";
 
 interface Props {
+  observacaoAdicionada: HTMLInputElement | string;
   addedDate: string;
   addedTime: string;
   newHora: string;
@@ -32,7 +33,7 @@ function HorarioAdicionado(props: Props) {
           className="rounded-top p-2 d-flex text-bg-primary justify-content-between"
           style={{ width: "300px", margin: "auto" }}
         >
-          <p style={{ marginBottom: "0px" }}>Horário adicionado:</p>
+          <p style={{ marginBottom: "0px" }}>{String(props.observacaoAdicionada).length > 0 ? `${props.observacaoAdicionada}:` : "Horário adicionado:"}</p>
           <button
             type="button"
             className="btn-close"
