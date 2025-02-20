@@ -7,7 +7,7 @@ interface Props {
   addedTime: string;
   newHora: string;
   newMinuto: string;
-  onRemove: () => void;
+  onRemove?: () => void;
 }
 
 function HorarioAdicionado(props: Props) {
@@ -19,7 +19,7 @@ function HorarioAdicionado(props: Props) {
   const handleCloseModal = () => setShowModal(false);
 
   const handleConfirmRemove = () => {
-    props.onRemove();
+    props.onRemove?.();
     setShowModal(false);
   };
 
@@ -34,12 +34,12 @@ function HorarioAdicionado(props: Props) {
           style={{ width: "300px", margin: "auto" }}
         >
           <p style={{ marginBottom: "0px" }}>{String(props.observacaoAdicionada).length > 0 ? `${props.observacaoAdicionada}:` : "Horário adicionado:"}</p>
-          <button
+          {props.onRemove && <button
             type="button"
             className="btn-close"
             aria-label="Close"
             onClick={handleOpenModal}
-          />
+          />}
         </div>
         <div className="px-2  rounded-bottom border border-primary">
           <span>

@@ -11,60 +11,71 @@ interface Props {
   getEmail: (email: string) => void;
   setTotalHoras: (horas: string) => void;
   setTotalMinutos: (minutos: string) => void;
+  setMostrarResumo: (value: boolean) => void;
 }
 
 interface PerfilProps {
   nome: string;
   isLogado: () => void;
+  setMostrarResumo: (value: boolean) => void;
 }
 
 export function Perfil(props: PerfilProps) {
   const inicial = `${props.nome[0]?.toUpperCase() ?? ''}`;
-
   const backgroundColor = stringToColor(props.nome);
+  const [ajusteUsuario, setAjusteUsuario] = useState(false);
 
   const handleUserClick = () => {
-    setAjusteUsuario(!(ajusteUsuario))
-  }
+    setAjusteUsuario(!ajusteUsuario);
+  };
 
-  let [ ajusteUsuario, setAjusteUsuario ] = useState(false)
-
-  
   return (
     <>
       <div className="profile-image" style={{ backgroundColor }} onClick={handleUserClick}> 
         {inicial}
       </div>
-
-    { ajusteUsuario &&
-      <div style={{backgroundColor: "white", width: "200px", borderRadius: '5px', zIndex: "1", position: "absolute", border: "1px solid #333"}}>
-        <div style={{borderBottom: "2px solid #ccc", paddingBottom: "5px"}}>
-        <p style={{color: "black", paddingLeft: "12px", paddingTop: "5px", marginBottom: "0", overflow: "hidden"}}>Olá, {props.nome}</p>
-        </div>
-        <button className="btn" type="button" onClick={props.isLogado} style={{display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none"}}>
+      {ajusteUsuario && (
+        <div style={{ backgroundColor: "white", width: "200px", borderRadius: '5px', zIndex: "1", position: "absolute", border: "1px solid #333" }}>
+          <div style={{ borderBottom: "2px solid #ccc", paddingBottom: "5px" }}>
+            <p style={{ color: "black", paddingLeft: "12px", paddingTop: "5px", marginBottom: "0", overflow: "hidden" }}>
+              Olá, {props.nome}
+            </p>
+          </div>
+          <button 
+            className="btn" 
+            type="button" 
+            onClick={() => props.setMostrarResumo(true)} 
+            style={{ display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none" }}
+          >
+            Visualizar Horários  
+            <img src="/assets/clock.svg" alt="Clock"/>
+          </button> 
+          <button 
+            className="btn" 
+            type="button" 
+            onClick={props.isLogado} 
+            style={{ display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none" }}
+          >
             Sair  
-            <img src="/assets/exit-svgrepo-com.svg"/>
-        </button> 
-      </div>
-    }
+            <img src="/assets/exit-svgrepo-com.svg" alt="Exit"/>
+          </button> 
+        </div>
+      )}
     </>
-  )
+  );
 }
 
 
 function EntradaDados(props: Props) {
-
-  let [ selectInputTime, setInputTime ] = useState('00:00')
-  let [ observacao, setObservacao] = useState('')
-
-  let [ showLogin, setShowLogin ] = useState(false)
+  const [selectInputTime, setInputTime] = useState('00:00');
+  const [observacao, setObservacao] = useState('');
+  const [showLogin, setShowLogin] = useState(false);
+  const [isLogado, setIsLogado] = useState(false);
+  const [usuNome, setUsuNome] = useState('');
+  const [email, setEmail] = useState('');
 
   const handleLoginClick = () => setShowLogin(true);
-
   const handleCloseLogin = () => setShowLogin(false);
-
-  let [ isLogado, setIsLogado ] = useState(false)
-
   
   const handleLogin = () => {
     props.onLogin(email);
@@ -72,13 +83,9 @@ function EntradaDados(props: Props) {
     setShowLogin(false);
   };
   
-  
-  let [ showCadastro, setShowCadastro ] = useState(false);
-  
+  const [showCadastro, setShowCadastro] = useState(false);
   const handleCadastroClick = () => setShowCadastro(true);
-  
   const handleCloseCadastro = () => setShowCadastro(false);
-  
   const handleCadastro = () => {
     props.onCadastro();
     setShowCadastro(false);
@@ -87,25 +94,19 @@ function EntradaDados(props: Props) {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputTime(event.target.value);
   };
-
   const handleObservacaoSubmit = (event: ChangeEvent<HTMLInputElement>) => {
-    setObservacao(event.target.value)
-  }
-  
+    setObservacao(event.target.value);
+  };
   const handleExit = () => {
-    setIsLogado(false)
+    setIsLogado(false);
     setEmail('');
     props.getEmail('');
     props.setTotalHoras("0");
     props.setTotalMinutos("0");
-  }
-  
-  let [ usuNome, setUsuNome ] = useState('');
-  let [ email, setEmail ] = useState('');
-
+  };
   
   function handleUsuNome(usuNome: string) {
-    setUsuNome(usuNome)
+    setUsuNome(usuNome);
   }
   
   function handleEmail(email: string) {
@@ -113,68 +114,61 @@ function EntradaDados(props: Props) {
     props.getEmail(email);
   }
 
-
   return (
     <>
-      <div className="text-bg-success p-4" style={{display: "grid", gridTemplateColumns: "1fr auto 1fr", margin: "auto", justifyContent: "space-between", alignItems: "center", position: "relative"}}>
+      <div className="text-bg-success p-4" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", margin: "auto", justifyContent: "space-between", alignItems: "center", position: "relative" }}>
         <div>
-        {isLogado &&
-          <div style={{alignContent: "center"}}>
-          <Perfil nome={usuNome} isLogado={handleExit}/>
-          </div>
-        }
+          {isLogado && (
+            <div style={{ alignContent: "center" }}>
+              <Perfil nome={usuNome} isLogado={handleExit} setMostrarResumo={props.setMostrarResumo} />
+            </div>
+          )}
         </div>
-        <h2 style={{padding: "20px", textAlign: "center", justifySelf: "center"}}>Calculadora de Horários:</h2>
-        <div style={{display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: "column"}}>
-        {!isLogado && 
-          <button type="button" className="btn btn-light" style={{width: "100px"}} onClick={handleLoginClick}>
-            Login
-          </button>
-        }
-        {!isLogado && 
-          <button type="button" className="btn btn-primary" style={{width: "100px"}} onClick={handleCadastroClick}>
-            Cadastro
-          </button>
-        }
+        <h2 style={{ padding: "20px", textAlign: "center", justifySelf: "center" }}>Calculadora de Horários:</h2>
+        <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: "column" }}>
+          {!isLogado && 
+            <button type="button" className="btn btn-light" style={{ width: "100px" }} onClick={handleLoginClick}>
+              Login
+            </button>
+          }
+          {!isLogado && 
+            <button type="button" className="btn btn-primary" style={{ width: "100px" }} onClick={handleCadastroClick}>
+              Cadastro
+            </button>
+          }
         </div>
       </div>
       <form onSubmit={(e) => {
         e.preventDefault();
-        
         let currentDate = new Date();
-
-        let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement
-        let observacao = observacaoAdicionada?.value ?? ''
+        let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement;
+        let observacao = observacaoAdicionada?.value ?? '';
         let addedDate = currentDate.toLocaleDateString();
         let addedTime = currentDate.toLocaleTimeString();
-        let hora      = parseInt(selectInputTime.slice(0, selectInputTime.indexOf(':')));
-        let minuto    = parseInt(selectInputTime.slice(selectInputTime.indexOf(':') + 1));
-
-        let newHora   = ''
-        let newMinuto = ''
-
-        { hora   < 10 ? newHora   = '0' + String(hora)   : newHora   = String(hora) }
+        let hora = parseInt(selectInputTime.slice(0, selectInputTime.indexOf(':')));
+        let minuto = parseInt(selectInputTime.slice(selectInputTime.indexOf(':') + 1));
+        let newHora = '';
+        let newMinuto = '';
+        { hora < 10 ? newHora = '0' + String(hora) : newHora = String(hora) }
         { minuto < 10 ? newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
-
         props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
-
         setInputTime("00:00");
-        setObservacao('')
+        setObservacao('');
       }}>
-        <div className="d-block" style={{width: "300px", margin: "auto"}}>
+        <div className="d-block" style={{ width: "300px", margin: "auto" }}>
           <div className="text-center input-group my-3">
             <span className="input-group-text" id="basic-addon1">Descrição:</span>
             <input 
-            type="text" 
-            className="form-control" 
-            id="observacao" 
-            placeholder="Descrição"
-            value={observacao}
-            onChange={handleObservacaoSubmit}
+              type="text" 
+              className="form-control" 
+              id="observacao" 
+              placeholder="Descrição"
+              value={observacao}
+              onChange={handleObservacaoSubmit}
             />
           </div>
         </div>
-        <div className="d-block mb-5" style={{width: "300px", margin: "auto"}}>
+        <div className="d-block mb-5" style={{ width: "300px", margin: "auto" }}>
           <div className="text-center input-group my-3">
             <span className="input-group-text" id="basic-addon1">Digite o tempo:</span>
             <input 
@@ -189,34 +183,28 @@ function EntradaDados(props: Props) {
           <div>
             <button
               type="submit"
-              className=" btn text-bg-primary"
-              style={{width: "300px", margin: "auto"}}
-              >Enviar
-            </button>
+              className="btn text-bg-primary"
+              style={{ width: "300px", margin: "auto" }}
+            >Enviar</button>
           </div>
         </div> 
       </form>
-
       {showLogin && 
         <LoginModal
-          getEmail = {handleEmail}
+          getEmail={handleEmail}
           getUsuNome={handleUsuNome}
           onClose={handleCloseLogin}
           onConfirm={handleLogin}
-        >
-
-        </LoginModal>
-      }
-
-      { showCadastro &&
-        <CadastroModal 
-        onClose={handleCloseCadastro}
-        onConfirm={handleCadastro}
         />
       }
-
+      {showCadastro && 
+        <CadastroModal 
+          onClose={handleCloseCadastro}
+          onConfirm={handleCadastro}
+        />
+      }
     </>
-  )
+  );
 }
 
 export default EntradaDados;
