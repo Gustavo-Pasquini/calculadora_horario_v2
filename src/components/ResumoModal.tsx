@@ -27,6 +27,7 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
   const [erroAno, setErroAno] = useState(false);
   const [totalFilteredHoras, setTotalFilteredHoras] = useState(0);
   const [totalFilteredMinutos, setTotalFilteredMinutos] = useState(0);
+  const [consultaFeita, setConsultaFeita] = useState(false);
   const email = props.email;
   
   // Função para filtrar os registros e calcular o total de horas e minutos
@@ -52,6 +53,8 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
     } else {
       setErroAno(false);
     }
+
+
 
     try {
       const q = query(
@@ -87,6 +90,7 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
         });
 
       setHorarios(filteredHorarios);
+      setConsultaFeita(true);
 
       // Calcula a soma das horas e minutos dos registros filtrados
       let somahoras = 0;
@@ -168,7 +172,7 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
             </form>
           </div>
           <div className="modal-body" style={{ overflow: "auto", maxHeight: "400px" }}>
-            {horarios.map((horario, index) => (
+            {horarios.length > 0 || !(consultaFeita) ? horarios.map((horario, index) => (
               <HorarioAdicionado
                 key={index}
                 observacaoAdicionada={horario.observacao}
@@ -177,7 +181,10 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
                 newHora={horario.hora}
                 newMinuto={horario.minuto}
               />
-            ))}
+            ))
+            :
+            <h5 className="d-flex justify-content-center">Nenhum horário encontrado!</h5>
+          }
           </div>
           <div className="modal-footer">
             <div style={{ marginRight: "auto", marginLeft: "20px" }}>
