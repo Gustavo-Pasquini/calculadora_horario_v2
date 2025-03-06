@@ -7,6 +7,7 @@ import EntradaDados from "./components/EntradaDados";
 import HorarioAdicionado from "./components/HorarioAdicionado";
 import Totalizador from "./components/Totalizador";
 import ResumoModal from "./components/ResumoModal";
+import Footer from "./components/footer";
 
 interface Horario {
   id: any;
@@ -186,19 +187,41 @@ function App() {
   };
 
   return (
-    <>
-      <EntradaDados
-        getEmail={handleEmail}
-        onButtonClick={handleButtonClick}
-        onLogin={handleLogin}
-        onCadastro={handleCadastro}
-        setTotalHoras={setTotalHoras}
-        setTotalMinutos={setTotalMinutos}
-        setMostrarResumo={setMostrarResumo}
-      />
-      {widthDimension >= 700 && horarios.length > 0 ? (
-        <div className="row">
-          <div className="col">
+    <div className="app-container">
+      <div className="content">
+        <EntradaDados
+          getEmail={handleEmail}
+          onButtonClick={handleButtonClick}
+          onLogin={handleLogin}
+          onCadastro={handleCadastro}
+          setTotalHoras={setTotalHoras}
+          setTotalMinutos={setTotalMinutos}
+          setMostrarResumo={setMostrarResumo}
+        />
+        {widthDimension >= 700 && horarios.length > 0 ? (
+          <div className="row">
+            <div className="col">
+              {horarios.map((horario, index) => (
+                <HorarioAdicionado
+                  key={index}
+                  observacaoAdicionada={horario.observacao}
+                  addedDate={horario.date}
+                  addedTime={horario.time}
+                  newHora={horario.hora}
+                  newMinuto={horario.minuto}
+                  onRemove={() => handleRemove(index)}
+                />
+              ))}
+            </div>
+            <div className="col">
+              <Totalizador
+                totalHoras={totalHoras === "" ? "0" : totalHoras}
+                totalMinutos={totalMinutos === "" ? "0" : totalMinutos}
+              />
+            </div>
+          </div>
+        ) : (
+          <div>
             {horarios.map((horario, index) => (
               <HorarioAdicionado
                 key={index}
@@ -210,41 +233,22 @@ function App() {
                 onRemove={() => handleRemove(index)}
               />
             ))}
-          </div>
-          <div className="col">
             <Totalizador
               totalHoras={totalHoras === "" ? "0" : totalHoras}
               totalMinutos={totalMinutos === "" ? "0" : totalMinutos}
             />
           </div>
-        </div>
-      ) : (
-        <div>
-          {horarios.map((horario, index) => (
-            <HorarioAdicionado
-              key={index}
-              observacaoAdicionada={horario.observacao}
-              addedDate={horario.date}
-              addedTime={horario.time}
-              newHora={horario.hora}
-              newMinuto={horario.minuto}
-              onRemove={() => handleRemove(index)}
-            />
-          ))}
-          <Totalizador
-            totalHoras={totalHoras === "" ? "0" : totalHoras}
-            totalMinutos={totalMinutos === "" ? "0" : totalMinutos}
+        )}
+        {mostrarResumo && (
+          <ResumoModal
+            isOpen={mostrarResumo}
+            onClose={() => setMostrarResumo(false)}
+            email={email}
           />
-        </div>
-      )}
-      {mostrarResumo && (
-        <ResumoModal
-          isOpen={mostrarResumo}
-          onClose={() => setMostrarResumo(false)}
-          email={email}
-        />
-      )}
-    </>
+        )}
+      </div>
+      <Footer />
+    </div>
   );
 }
 

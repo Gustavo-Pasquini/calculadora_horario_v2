@@ -67,7 +67,6 @@ export function Perfil(props: PerfilProps) {
 
 
 function EntradaDados(props: Props) {
-  const [selectInputTime, setInputTime] = useState('00:00');
   const [observacao, setObservacao] = useState('');
   const [showLogin, setShowLogin] = useState(false);
   const [isLogado, setIsLogado] = useState(false);
@@ -91,9 +90,18 @@ function EntradaDados(props: Props) {
     setShowCadastro(false);
   };  
   
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInputTime(event.target.value);
-  };
+  const [ selectInputHour, setInputHour ] = useState('');
+  const [ selectInputMinute, setInputMinute ] = useState('');
+
+
+  const onChangeHourInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputHour(event.target.value.replace(/[^0-9]/g, ""));
+  }
+
+  const onChangeMinuteInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputMinute(event.target.value.replace(/[6-9][0-9]|[^0-9]/g, ""));
+  }
+
   const handleObservacaoSubmit = (event: ChangeEvent<HTMLInputElement>) => {
     setObservacao(event.target.value);
   };
@@ -145,14 +153,15 @@ function EntradaDados(props: Props) {
         let observacao = observacaoAdicionada?.value ?? '';
         let addedDate = currentDate.toLocaleDateString();
         let addedTime = currentDate.toLocaleTimeString();
-        let hora = parseInt(selectInputTime.slice(0, selectInputTime.indexOf(':')));
-        let minuto = parseInt(selectInputTime.slice(selectInputTime.indexOf(':') + 1));
+        let hora      = selectInputHour;
+        let minuto    = selectInputMinute;
         let newHora = '';
         let newMinuto = '';
-        { hora < 10 ? newHora = '0' + String(hora) : newHora = String(hora) }
-        { minuto < 10 ? newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
+        { hora.length   < 2 ? newHora   = '0' + String(hora)   : newHora   = String(hora) }
+        { minuto.length < 2 ? newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
         props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
-        setInputTime("00:00");
+        setInputHour("");
+        setInputMinute("");
         setObservacao('');
       }}>
         <div className="d-block" style={{ width: "300px", margin: "auto" }}>
@@ -169,16 +178,13 @@ function EntradaDados(props: Props) {
           </div>
         </div>
         <div className="d-block mb-5" style={{ width: "300px", margin: "auto" }}>
-          <div className="text-center input-group my-3">
-            <span className="input-group-text" id="basic-addon1">Digite o tempo:</span>
-            <input 
-              type="time" 
-              className="form-control" 
-              id="EntradaHorario" 
-              onChange={handleChange}
-              value={selectInputTime}
-              required
-            />
+          <div className="text-center input-group my-3 rounded" style={{padding: "10px", backgroundColor: "#f8f9fa", border: "solid #dee2e6", borderWidth: "1px"}}>
+            <span className="text mb-2" style={{fontWeight: "400", fontSize: "1rem"}}>Digite o tempo:</span>
+            <div className="d-flex mb-2" style={{alignItems: "center", justifyContent: "center", width: "100%"}}>
+              <input type="text" onChange={(e) => onChangeHourInput(e)} className="form-control text-center" value={selectInputHour} maxLength={2} placeholder="HH" />
+              <span className="mx-2">:</span>
+              <input type="text" onChange={(e) => onChangeMinuteInput(e)} className="form-control text-center" value={selectInputMinute} maxLength={2} placeholder="MM" />
+            </div>
           </div>
           <div>
             <button
