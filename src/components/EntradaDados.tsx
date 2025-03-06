@@ -31,7 +31,7 @@ export function Perfil(props: PerfilProps) {
 
   return (
     <>
-      <div className="profile-image" style={{ backgroundColor }} onClick={handleUserClick}> 
+      <div className="profile-image" style={{ backgroundColor, cursor: "pointer" }} onClick={handleUserClick}> 
         {inicial}
       </div>
       {ajusteUsuario && (
