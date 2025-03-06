@@ -18,7 +18,7 @@ function Footer() {
             href="https://www.linkedin.com/in/gustavo-pasquini-6596082a9/"
             role="button"
             target="_blank"
-            ><img src="public/assets/linkedin.svg"></img>
+            ><img src="/assets/linkedin.svg"></img>
           </a>
           {/*GitHub*/}
           <a
@@ -28,7 +28,7 @@ function Footer() {
             href="https://github.com/Gustavo-Pasquini"
             role="button"
             target="_blank"
-            ><img src="public/assets/github.svg"></img>
+            ><img src="/assets/github.svg"></img>
             </a>
         </section>
       </div>

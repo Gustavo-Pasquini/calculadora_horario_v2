@@ -7,7 +7,7 @@ import EntradaDados from "./components/EntradaDados";
 import HorarioAdicionado from "./components/HorarioAdicionado";
 import Totalizador from "./components/Totalizador";
 import ResumoModal from "./components/ResumoModal";
-import Footer from "./components/footer";
+import Footer from "./components/Footer";
 
 interface Horario {
   id: any;
