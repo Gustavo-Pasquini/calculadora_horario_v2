@@ -8,6 +8,7 @@ import HorarioAdicionado from "./components/HorarioAdicionado";
 import Totalizador from "./components/Totalizador";
 import ResumoModal from "./components/ResumoModal";
 import Footer from "./components/Footer";
+import ConfigModal from "./components/ConfigModal";
 
 interface Horario {
   id: any;
@@ -21,6 +22,7 @@ interface Horario {
 
 function App() {
   const [mostrarResumo, setMostrarResumo] = useState(false);
+  const [mostrarConfig, setMostrarConfig] = useState(false);
   const [horarios, setHorarios] = useState<Horario[]>([]);
   const [totalHoras, setTotalHoras] = useState("");
   const [totalMinutos, setTotalMinutos] = useState("");
@@ -197,6 +199,7 @@ function App() {
           setTotalHoras={setTotalHoras}
           setTotalMinutos={setTotalMinutos}
           setMostrarResumo={setMostrarResumo}
+          setMostrarConfig={setMostrarConfig}
         />
         {widthDimension >= 700 && horarios.length > 0 ? (
           <div className="row">
@@ -244,7 +247,14 @@ function App() {
             isOpen={mostrarResumo}
             onClose={() => setMostrarResumo(false)}
             email={email}
-          />
+          />   
+        )}
+        {mostrarConfig && (
+          <ConfigModal
+          isOpen={mostrarConfig}
+          onClose={() => setMostrarConfig(false)}
+          email={email}
+        />
         )}
       </div>
       <Footer />

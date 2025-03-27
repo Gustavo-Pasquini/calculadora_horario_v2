@@ -44,7 +44,8 @@ interface Props {
         await addDoc(collection(db, "usuario"), {
           nome: nome?.value ?? '',
           email: email?.value ?? '',
-          senha: senha?.value ?? ''
+          senha: senha?.value ?? '',
+          mantemDescricao: false
         });
         //console.log("Foi enviado!");
         //console.log("Document written with ID: ", docRef.id);

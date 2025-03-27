@@ -171,7 +171,7 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
               </div>
             </form>
           </div>
-          <div className="modal-body" style={{ overflow: "auto", maxHeight: "400px" }}>
+          <div className="modal-body" style={{ overflow: "auto", maxHeight: "400px", display: "flex", flexWrap: "wrap"}}>
             {horarios.length > 0 || !(consultaFeita) ? horarios.map((horario, index) => (
               <HorarioAdicionado
                 key={index}

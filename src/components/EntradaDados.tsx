@@ -1,3 +1,5 @@
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from '../config/firestore.ts';
 import { ChangeEvent, useState } from "react";
 import LoginModal from "./LoginModal";
 import CadastroModal from "./CadastroModal";
@@ -12,12 +14,14 @@ interface Props {
   setTotalHoras: (horas: string) => void;
   setTotalMinutos: (minutos: string) => void;
   setMostrarResumo: (value: boolean) => void;
+  setMostrarConfig: (value: boolean) => void;
 }
 
 interface PerfilProps {
   nome: string;
   isLogado: () => void;
   setMostrarResumo: (value: boolean) => void;
+  setMostrarConfig: (value: boolean) => void;
 }
 
 export function Perfil(props: PerfilProps) {
@@ -49,6 +53,15 @@ export function Perfil(props: PerfilProps) {
           >
             Visualizar Horários  
             <img src="/assets/clock.svg" alt="Clock"/>
+          </button> 
+          <button 
+            className="btn" 
+            type="button" 
+            onClick={() => props.setMostrarConfig(true)} 
+            style={{ display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none" }}
+          >
+            Opções  
+            <img style={{width: "20px"}} src="/assets/settings-svgrepo-com.svg" alt="Exit"/>
           </button> 
           <button 
             className="btn" 
@@ -122,13 +135,31 @@ function EntradaDados(props: Props) {
     props.getEmail(email);
   }
 
+  const [mantemDescricao, setMantemDescricao] = useState(false);
+  const verificaConfiguracao = async () => {
+    try {
+
+      const q = query(
+        collection(db, "usuario"),
+        where("email", "==", email)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      setMantemDescricao(querySnapshot.docs[0].data().mantemDescricao);
+
+    } catch (error) {
+      console.error("Erro ao atualizar configuração:", error);
+    }
+  }
+
   return (
     <>
       <div className="text-bg-success p-4" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", margin: "auto", justifyContent: "space-between", alignItems: "center", position: "relative" }}>
         <div>
           {isLogado && (
             <div style={{ alignContent: "center" }}>
-              <Perfil nome={usuNome} isLogado={handleExit} setMostrarResumo={props.setMostrarResumo} />
+              <Perfil nome={usuNome} isLogado={handleExit} setMostrarResumo={props.setMostrarResumo} setMostrarConfig={props.setMostrarConfig}/>
             </div>
           )}
         </div>
@@ -148,6 +179,7 @@ function EntradaDados(props: Props) {
       </div>
       <form onSubmit={(e) => {
         e.preventDefault();
+        verificaConfiguracao();
         let currentDate = new Date();
         let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement;
         let observacao = observacaoAdicionada?.value ?? '';
@@ -162,7 +194,7 @@ function EntradaDados(props: Props) {
         props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
         setInputHour("");
         setInputMinute("");
-        setObservacao('');
+        mantemDescricao && setObservacao('');
       }}>
         <div className="d-block" style={{ width: "300px", margin: "auto" }}>
           <div className="text-center input-group my-3">
