@@ -102,7 +102,7 @@ function App() {
     hora: string,
     minuto: string
   ) => {
-    if ((hora !== "00" || minuto !== "00") && !isNaN(parseInt(hora)) && !isNaN(parseInt(minuto))) {
+    if ((parseInt(hora) !== 0 || parseInt(minuto) !== 0) && !isNaN(parseInt(hora)) && !isNaN(parseInt(minuto))) {
       try {
         if (email) {
           const docRef = await addDoc(collection(db, "horario"), {

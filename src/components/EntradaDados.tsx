@@ -1,6 +1,6 @@
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from '../config/firestore.ts';
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import LoginModal from "./LoginModal";
 import CadastroModal from "./CadastroModal";
 import '../global.css';
@@ -136,22 +136,34 @@ function EntradaDados(props: Props) {
   }
 
   const [mantemDescricao, setMantemDescricao] = useState(false);
+  const [informaHorariosCalculo, setInformaHorariosCalculo] = useState(false);
   const verificaConfiguracao = async () => {
+    if (email) {
     try {
+
 
       const q = query(
         collection(db, "usuario"),
         where("email", "==", email)
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      setMantemDescricao(querySnapshot.docs[0].data().mantemDescricao);
-
-    } catch (error) {
-      console.error("Erro ao atualizar configuração:", error);
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        setMantemDescricao(querySnapshot.docs[0].data().mantemDescricao);
+        setInformaHorariosCalculo(querySnapshot.docs[0].data().informaHorariosCalculo);
+        
+      } catch (error) {
+        console.error("Erro ao atualizar configuração:", error);
+      }
     }
   }
+
+  useEffect(() => {
+    if(email){
+      verificaConfiguracao();
+    }
+
+  }, [email])
 
   return (
     <>
@@ -180,21 +192,34 @@ function EntradaDados(props: Props) {
       <form onSubmit={(e) => {
         e.preventDefault();
         verificaConfiguracao();
-        let currentDate = new Date();
-        let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement;
-        let observacao = observacaoAdicionada?.value ?? '';
-        let addedDate = currentDate.toLocaleDateString();
-        let addedTime = currentDate.toLocaleTimeString();
-        let hora      = selectInputHour;
-        let minuto    = selectInputMinute;
-        let newHora = '';
-        let newMinuto = '';
-        { hora.length   < 2 ? newHora   = '0' + String(hora)   : newHora   = String(hora) }
-        { minuto.length < 2 ? newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
-        props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
-        setInputHour("");
-        setInputMinute("");
-        mantemDescricao && setObservacao('');
+
+          if (!informaHorariosCalculo || !email) {
+
+            let currentDate = new Date();
+            let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement;
+            let observacao = observacaoAdicionada?.value ?? '';
+            let addedDate = currentDate.toLocaleDateString();
+            let addedTime = currentDate.toLocaleTimeString();
+            let hora      = selectInputHour;
+            let minuto    = selectInputMinute;
+            let newHora = '';
+            let newMinuto = '';
+            { hora.length   < 2 ? hora.length == 0 ? newHora = '00' : newHora   = '0' + String(hora)   : newHora   = String(hora) }
+            { minuto.length < 2 ? minuto.length == 0 ? newMinuto = '00' : newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
+            props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
+            setInputHour("");
+            setInputMinute("");
+
+          } else {
+            
+            // Alterar
+
+          }
+
+
+
+        
+          mantemDescricao || !email && setObservacao('');
       }}>
         <div className="d-block" style={{ width: "300px", margin: "auto" }}>
           <div className="text-center input-group my-3">
@@ -210,7 +235,10 @@ function EntradaDados(props: Props) {
           </div>
         </div>
         <div className="d-block mb-5" style={{ width: "300px", margin: "auto" }}>
-          <div className="text-center input-group my-3 rounded" style={{padding: "10px", backgroundColor: "#f8f9fa", border: "solid #dee2e6", borderWidth: "1px"}}>
+
+        { !informaHorariosCalculo ? (
+
+          <div key={String(informaHorariosCalculo)} className="text-center input-group my-3 rounded" style={{padding: "10px", backgroundColor: "#f8f9fa", border: "solid #dee2e6", borderWidth: "1px"}}>
             <span className="text mb-2" style={{fontWeight: "400", fontSize: "1rem"}}>Digite o tempo:</span>
             <div className="d-flex mb-2" style={{alignItems: "center", justifyContent: "center", width: "100%"}}>
               <input type="text" onChange={(e) => onChangeHourInput(e)} className="form-control text-center" value={selectInputHour} maxLength={2} placeholder="HH" />
@@ -218,6 +246,10 @@ function EntradaDados(props: Props) {
               <input type="text" onChange={(e) => onChangeMinuteInput(e)} className="form-control text-center" value={selectInputMinute} maxLength={2} placeholder="MM" />
             </div>
           </div>
+        )
+          : null // Alterar
+
+          }
           <div>
             <button
               type="submit"
