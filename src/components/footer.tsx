@@ -9,12 +9,12 @@ function Footer() {
       <div className="container pt-4">
           {/*Social Media*/}
         <section className="mb-4">
-
+          <div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
           {/*LinkedIn*/}
           <a
             data-mdb-ripple-init
             className="btn mt-1 mx-3"
-            style={{backgroundColor: "#0082ca", borderRadius: "50%", width: "40px", height: "40px"}}
+            style={{backgroundColor: "#0082ca", borderRadius: "50%", width: "40px", height: "40px", display: "flex", justifyContent: "center", alignItems: "center"}}
             href="https://www.linkedin.com/in/gustavo-pasquini-6596082a9/"
             role="button"
             target="_blank"
@@ -24,12 +24,13 @@ function Footer() {
           <a
             data-mdb-ripple-init
             className="btn mt-1 mx-3"
-            style={{backgroundColor: "#333333", borderRadius: "50%", width: "40px", height: "40px"}}
+            style={{backgroundColor: "#333333", borderRadius: "50%", width: "40px", height: "40px", display: "flex", justifyContent: "center", alignItems: "center"}}
             href="https://github.com/Gustavo-Pasquini"
             role="button"
             target="_blank"
             ><img src="/assets/github.svg"></img>
             </a>
+          </div>
         </section>
       </div>
 

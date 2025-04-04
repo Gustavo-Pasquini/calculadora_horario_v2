@@ -115,6 +115,29 @@ function EntradaDados(props: Props) {
     setInputMinute(event.target.value.replace(/[6-9][0-9]|[^0-9]/g, ""));
   }
 
+  const [ selectInputHourEntrada, setInputHourEntrada ] = useState('');
+  const [ selectInputMinuteEntrada, setInputMinuteEntrada ] = useState('');
+  const [ selectInputHourSaida, setInputHourSaida ] = useState('');
+  const [ selectInputMinuteSaida, setInputMinuteSaida ] = useState('');
+
+
+  const onChangeHourInputEntrada = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputHourEntrada(event.target.value.replace(/[2][5-9]|[3-9][0-9]|[^0-9]/g, ""));
+  }
+
+  const onChangeMinuteInputEntrada = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputMinuteEntrada(event.target.value.replace(/[6-9][0-9]|[^0-9]/g, ""));
+  }
+
+  const onChangeHourInputSaida = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputHourSaida(event.target.value.replace(/[2][5-9]|[3-9][0-9]|[^0-9]/g, ""));
+  }
+
+  const onChangeMinuteInputSaida = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputMinuteSaida(event.target.value.replace(/[6-9][0-9]|[^0-9]/g, ""));
+  }
+
+
   const handleObservacaoSubmit = (event: ChangeEvent<HTMLInputElement>) => {
     setObservacao(event.target.value);
   };
@@ -133,6 +156,49 @@ function EntradaDados(props: Props) {
   function handleEmail(email: string) {
     setEmail(email);
     props.getEmail(email);
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    verificaConfiguracao();
+
+    let currentDate = new Date();
+    let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement;
+    let observacao = observacaoAdicionada?.value ?? '';
+    let addedDate = currentDate.toLocaleDateString();
+    let addedTime = currentDate.toLocaleTimeString();
+
+    if (!informaHorariosCalculo || !email) {
+
+      let hora      = selectInputHour;
+      let minuto    = selectInputMinute;
+      let newHora = '';
+      let newMinuto = '';
+      { hora.length   < 2 ? hora.length == 0 ? newHora = '00' : newHora   = '0' + hora   : newHora   = hora }
+      { minuto.length < 2 ? minuto.length == 0 ? newMinuto = '00' : newMinuto = '0' + minuto : newMinuto = minuto }
+      props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
+      setInputHour("");
+      setInputMinute("");
+
+    } else {
+      
+      let hora      = parseInt(selectInputHourSaida) - parseInt(selectInputHourEntrada) < 0 ? 24 + parseInt(selectInputHourSaida) - parseInt(selectInputHourEntrada) : parseInt(selectInputHourSaida) - parseInt(selectInputHourEntrada);
+      let minuto    = parseInt(selectInputMinuteSaida) - parseInt(selectInputMinuteEntrada) < 0 ? hora-- && 60 + parseInt(selectInputMinuteSaida) - parseInt(selectInputMinuteEntrada) : parseInt(selectInputMinuteSaida) - parseInt(selectInputMinuteEntrada);
+      let horaString = String(hora);
+      let minutoString = String(minuto);
+      let newHora = '';
+      let newMinuto = '';
+      { horaString.length   < 2 ? horaString.length == 0 ? newHora = '00' : newHora   = '0' + horaString   : newHora   = horaString }
+      { minutoString.length < 2 ? minutoString.length == 0 ? newMinuto = '00' : newMinuto = '0' + minutoString : newMinuto = minutoString }
+      props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
+      setInputHourEntrada("");
+      setInputMinuteEntrada("");
+      setInputHourSaida("");
+      setInputMinuteSaida("");
+
+    }
+
+      mantemDescricao || !email && setObservacao('');
   }
 
   const [mantemDescricao, setMantemDescricao] = useState(false);
@@ -167,7 +233,7 @@ function EntradaDados(props: Props) {
 
   return (
     <>
-      <div className="text-bg-success p-4" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", margin: "auto", justifyContent: "space-between", alignItems: "center", position: "relative" }}>
+      <div className="text-bg-success p-4" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", margin: "auto", justifyContent: "space-between", alignItems: "center", position: "relative"}}>
         <div>
           {isLogado && (
             <div style={{ alignContent: "center" }}>
@@ -175,7 +241,7 @@ function EntradaDados(props: Props) {
             </div>
           )}
         </div>
-        <h2 style={{ padding: "20px", textAlign: "center", justifySelf: "center" }}>Calculadora de Horários:</h2>
+          <h2 style={{ margin: "20px", textAlign: "center", justifySelf: "center" }}>Calculadora de Horários:</h2>
         <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: "column" }}>
           {!isLogado && 
             <button type="button" className="btn btn-light" style={{ width: "100px" }} onClick={handleLoginClick}>
@@ -189,38 +255,7 @@ function EntradaDados(props: Props) {
           }
         </div>
       </div>
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        verificaConfiguracao();
-
-          if (!informaHorariosCalculo || !email) {
-
-            let currentDate = new Date();
-            let observacaoAdicionada = document.querySelector('#observacao') as HTMLInputElement;
-            let observacao = observacaoAdicionada?.value ?? '';
-            let addedDate = currentDate.toLocaleDateString();
-            let addedTime = currentDate.toLocaleTimeString();
-            let hora      = selectInputHour;
-            let minuto    = selectInputMinute;
-            let newHora = '';
-            let newMinuto = '';
-            { hora.length   < 2 ? hora.length == 0 ? newHora = '00' : newHora   = '0' + String(hora)   : newHora   = String(hora) }
-            { minuto.length < 2 ? minuto.length == 0 ? newMinuto = '00' : newMinuto = '0' + String(minuto) : newMinuto = String(minuto) }
-            props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
-            setInputHour("");
-            setInputMinute("");
-
-          } else {
-            
-            // Alterar
-
-          }
-
-
-
-        
-          mantemDescricao || !email && setObservacao('');
-      }}>
+      <form onSubmit={handleSubmit}>
         <div className="d-block" style={{ width: "300px", margin: "auto" }}>
           <div className="text-center input-group my-3">
             <span className="input-group-text" id="basic-addon1">Descrição:</span>
@@ -247,7 +282,26 @@ function EntradaDados(props: Props) {
             </div>
           </div>
         )
-          : null // Alterar
+          : 
+          
+          <div>
+            <div key={`${String(informaHorariosCalculo)}-entrada`} className="text-center input-group my-3 rounded" style={{padding: "10px", backgroundColor: "#f8f9fa", border: "solid #dee2e6", borderWidth: "1px"}}>
+              <span className="text mb-2" style={{fontWeight: "400", fontSize: "1rem"}}>Horário de entrada:</span>
+              <div className="d-flex mb-2" style={{alignItems: "center", justifyContent: "center", width: "100%"}}>
+                <input type="text" onChange={(e) => onChangeHourInputEntrada(e)} className="form-control text-center" value={selectInputHourEntrada} maxLength={2} placeholder="HH" />
+                <span className="mx-2">:</span>
+                <input type="text" onChange={(e) => onChangeMinuteInputEntrada(e)} className="form-control text-center" value={selectInputMinuteEntrada} maxLength={2} placeholder="MM" />
+              </div>
+            </div>
+            <div key={`${String(informaHorariosCalculo)}-saida`} className="text-center input-group my-3 rounded" style={{padding: "10px", backgroundColor: "#f8f9fa", border: "solid #dee2e6", borderWidth: "1px"}}>
+              <span className="text mb-2" style={{fontWeight: "400", fontSize: "1rem"}}>Horário de saída:</span>
+              <div className="d-flex mb-2" style={{alignItems: "center", justifyContent: "center", width: "100%"}}>
+                <input type="text" onChange={(e) => onChangeHourInputSaida(e)} className="form-control text-center" value={selectInputHourSaida} maxLength={2} placeholder="HH" />
+                <span className="mx-2">:</span>
+                <input type="text" onChange={(e) => onChangeMinuteInputSaida(e)} className="form-control text-center" value={selectInputMinuteSaida} maxLength={2} placeholder="MM" />
+              </div>
+            </div>
+          </div>
 
           }
           <div>
