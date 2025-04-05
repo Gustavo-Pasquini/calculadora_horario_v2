@@ -43,6 +43,8 @@ function LoginModal  (props : Props) {
       const usuNome = doc.data().nome
       props.getUsuNome(usuNome)
       props.getEmail(email.value)
+      localStorage.setItem("cachedEmail", email.value);
+      localStorage.setItem("cachedUsuNome", usuNome)
     }
     
 

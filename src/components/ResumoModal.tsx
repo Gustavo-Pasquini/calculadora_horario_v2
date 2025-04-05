@@ -21,6 +21,8 @@ interface ResumoModalProps {
 
 const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
   if (!props.isOpen) return null;
+
+  const cachedEmail = localStorage.getItem("cachedEmail");
   
   const [horarios, setHorarios] = useState<Horario[]>([]);
   const [erroMes, setErroMes] = useState(false);
@@ -28,7 +30,7 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
   const [totalFilteredHoras, setTotalFilteredHoras] = useState(0);
   const [totalFilteredMinutos, setTotalFilteredMinutos] = useState(0);
   const [consultaFeita, setConsultaFeita] = useState(false);
-  const email = props.email;
+  const email = cachedEmail ?? props.email;
   
   // Função para filtrar os registros e calcular o total de horas e minutos
   const handleFiltroRegistros = async (e: React.FormEvent<HTMLFormElement>) => {

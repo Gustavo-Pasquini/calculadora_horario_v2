@@ -25,13 +25,16 @@ interface PerfilProps {
 }
 
 export function Perfil(props: PerfilProps) {
-  const inicial = `${props.nome[0]?.toUpperCase() ?? ''}`;
-  const backgroundColor = stringToColor(props.nome);
+  const cachedNome = localStorage.getItem("cachedUsuNome");
+
+  const inicial = `${cachedNome?.toUpperCase().slice(0, 1) ?? props.nome[0]?.toUpperCase() ?? ''}`;
+  const backgroundColor = stringToColor(cachedNome ?? props.nome);
   const [ajusteUsuario, setAjusteUsuario] = useState(false);
 
   const handleUserClick = () => {
     setAjusteUsuario(!ajusteUsuario);
   };
+
 
   return (
     <>
@@ -42,7 +45,7 @@ export function Perfil(props: PerfilProps) {
         <div style={{ backgroundColor: "white", width: "200px", borderRadius: '5px', zIndex: "1", position: "absolute", border: "1px solid #333" }}>
           <div style={{ borderBottom: "2px solid #ccc", paddingBottom: "5px" }}>
             <p style={{ color: "black", paddingLeft: "12px", paddingTop: "5px", marginBottom: "0", overflow: "hidden" }}>
-              Olá, {props.nome}
+              Olá, {cachedNome ?? props.nome}
             </p>
           </div>
           <button 
@@ -89,6 +92,13 @@ function EntradaDados(props: Props) {
   const handleLoginClick = () => setShowLogin(true);
   const handleCloseLogin = () => setShowLogin(false);
   
+  const cachedEmail = localStorage.getItem("cachedEmail");
+
+  useEffect(() => {
+    if (cachedEmail)
+      handleLogin()
+  }, [cachedEmail])
+
   const handleLogin = () => {
     props.onLogin(email);
     setIsLogado(true);
@@ -143,6 +153,8 @@ function EntradaDados(props: Props) {
   };
   const handleExit = () => {
     setIsLogado(false);
+    localStorage.removeItem("cachedEmail");
+    localStorage.removeItem("cachedUsuNome");
     setEmail('');
     props.getEmail('');
     props.setTotalHoras("0");
@@ -176,7 +188,7 @@ function EntradaDados(props: Props) {
       let newMinuto = '';
       { hora.length   < 2 ? hora.length == 0 ? newHora = '00' : newHora   = '0' + hora   : newHora   = hora }
       { minuto.length < 2 ? minuto.length == 0 ? newMinuto = '00' : newMinuto = '0' + minuto : newMinuto = minuto }
-      props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
+      props.onButtonClick(observacao, cachedEmail ?? email, addedDate, addedTime, newHora, newMinuto);
       setInputHour("");
       setInputMinute("");
 
@@ -190,7 +202,7 @@ function EntradaDados(props: Props) {
       let newMinuto = '';
       { horaString.length   < 2 ? horaString.length == 0 ? newHora = '00' : newHora   = '0' + horaString   : newHora   = horaString }
       { minutoString.length < 2 ? minutoString.length == 0 ? newMinuto = '00' : newMinuto = '0' + minutoString : newMinuto = minutoString }
-      props.onButtonClick(observacao, email, addedDate, addedTime, newHora, newMinuto);
+      props.onButtonClick(observacao, cachedEmail ?? email, addedDate, addedTime, newHora, newMinuto);
       setInputHourEntrada("");
       setInputMinuteEntrada("");
       setInputHourSaida("");
@@ -204,13 +216,13 @@ function EntradaDados(props: Props) {
   const [mantemDescricao, setMantemDescricao] = useState(false);
   const [informaHorariosCalculo, setInformaHorariosCalculo] = useState(false);
   const verificaConfiguracao = async () => {
-    if (email) {
+    if (cachedEmail ?? email) {
     try {
 
 
       const q = query(
         collection(db, "usuario"),
-        where("email", "==", email)
+        where("email", "==", cachedEmail ?? email)
         );
         
         const querySnapshot = await getDocs(q);
@@ -225,11 +237,11 @@ function EntradaDados(props: Props) {
   }
 
   useEffect(() => {
-    if(email){
+    if(cachedEmail ?? email){
       verificaConfiguracao();
     }
 
-  }, [email])
+  }, [cachedEmail, email])
 
   return (
     <>

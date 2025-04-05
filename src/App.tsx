@@ -30,6 +30,8 @@ function App() {
 
   const widthDimension = window.innerWidth;
 
+  const cachedEmail = localStorage.getItem("cachedEmail");
+
   // Atualiza o email vindo de EntradaDados
   const handleEmail = (email: string) => {
     setEmail(email);
@@ -37,16 +39,16 @@ function App() {
 
   useEffect(() => {
     setHorarios([]);
-  }, [email]);
+  }, [email, cachedEmail]);
 
   const handleLogin = async (email: string) => {
-    if (!email) return;
+    if (!(cachedEmail ?? email)) return;
     setTotalHoras("0");
     setTotalMinutos("0");
     try {
       const q = query(
         collection(db, "horario"),
-        where("email", "==", email)
+        where("email", "==", cachedEmail ?? email)
       );
       const querySnapshot = await getDocs(q);
       const targetDate = new Date();
@@ -91,8 +93,8 @@ function App() {
   };
 
   useEffect(() => {
-    handleLogin(email);
-  }, [email]);
+    handleLogin(cachedEmail ?? email);
+  }, [cachedEmail, email]);
 
   const handleButtonClick = async (
     observacao: string,
@@ -107,7 +109,7 @@ function App() {
         if (email) {
           const docRef = await addDoc(collection(db, "horario"), {
             observacao: observacao ?? '',
-            email: email ?? '',
+            email: cachedEmail ?? email ??'',
             date: date ?? '',
             time: time ?? '',
             hora: hora ?? '',

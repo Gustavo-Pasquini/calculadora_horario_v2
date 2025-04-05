@@ -10,10 +10,12 @@ interface Props {
 
 function ConfigModal(props: Props) {
     if (!props.isOpen) return null;
+
+    const cachedEmail = localStorage.getItem("cachedEmail")
   
     const configuraManterDescricao = async (descricaoChecked: boolean, informaHorariosChecked: boolean): Promise<void> => {
   
-        const email = props.email;
+        const email = cachedEmail ?? props.email;
 
         try {
 
@@ -51,7 +53,7 @@ function ConfigModal(props: Props) {
 
             const q = query(
               collection(db, "usuario"),
-              where("email", "==", props.email)
+              where("email", "==", cachedEmail ?? props.email)
             );
       
             const querySnapshot = await getDocs(q);
