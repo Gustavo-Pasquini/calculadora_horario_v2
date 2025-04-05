@@ -180,7 +180,7 @@ function EntradaDados(props: Props) {
     let addedDate = currentDate.toLocaleDateString();
     let addedTime = currentDate.toLocaleTimeString();
 
-    if (!informaHorariosCalculo || !email) {
+    if (!informaHorariosCalculo || !(cachedEmail ?? email)) {
 
       let hora      = selectInputHour;
       let minuto    = selectInputMinute;
