@@ -13,7 +13,7 @@ function ConfigModal(props: Props) {
 
     const cachedEmail = localStorage.getItem("cachedEmail")
   
-    const configuraManterDescricao = async (descricaoChecked: boolean, informaHorariosChecked: boolean): Promise<void> => {
+    const configuraDados = async (descricaoObrigatoriaChecked: boolean, descricaoChecked: boolean, informaHorariosChecked: boolean): Promise<void> => {
   
         const email = cachedEmail ?? props.email;
 
@@ -27,10 +27,12 @@ function ConfigModal(props: Props) {
             const querySnapshot = await getDocs(q);
 
             await updateDoc(doc(db, "usuario", querySnapshot.docs[0].id) , {
+                descricaoObrigatoria: descricaoObrigatoriaChecked,
                 mantemDescricao: descricaoChecked,
                 informaHorariosCalculo: informaHorariosChecked,
             });
 
+            setDescricaoObrigatoria(descricaoObrigatoriaChecked);
             setMantemDescricao(descricaoChecked);
             setInformaHorariosCalculo(informaHorariosChecked);
 
@@ -45,6 +47,7 @@ function ConfigModal(props: Props) {
         }
     }, [props.isOpen]);
 
+    const [descricaoObrigatoria, setDescricaoObrigatoria] = useState(false);
     const [mantemDescricao, setMantemDescricao] = useState(false);
     const [informaHorariosCalculo, setInformaHorariosCalculo] = useState(false);
     const verificaConfiguracoes = async () => {
@@ -58,6 +61,7 @@ function ConfigModal(props: Props) {
       
             const querySnapshot = await getDocs(q);
       
+            setDescricaoObrigatoria(querySnapshot.docs[0].data().descricaoObrigatoria)
             setMantemDescricao(querySnapshot.docs[0].data().mantemDescricao);
             setInformaHorariosCalculo(querySnapshot.docs[0].data().informaHorariosCalculo)
           } catch (error) {
@@ -76,17 +80,30 @@ function ConfigModal(props: Props) {
       <form>
         <div className="modal-dialog">
           <div className="modal-content">
-            <div className="modal-header">
-                <h5 className="modal-title">Configurações</h5>      
+            <div className="modal-header" style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <h5 className="modal-title">Configurações</h5>  
+                <div>
+                  <span style={{fontSize: "10px", color: "#dd0000"}}>(recarregue a página para atualizar)</span>
+                </div>    
             </div>
             <div className="modal-body" style={{minHeight: "300px"}}>
                 <div className="form-check form-switch mt-5">
                     <input 
                         className="form-check-input" 
                         type="checkbox" 
+                        id="descricaoObrigatoria" 
+                        checked={descricaoObrigatoria}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => configuraDados(event.target.checked, mantemDescricao, informaHorariosCalculo)} 
+                    />
+                    <label className="form-check-label" htmlFor="mantemDescricao">Tornar obrigatório informar a descrição</label>
+                </div>
+                <div className="form-check form-switch mt-5">
+                    <input 
+                        className="form-check-input" 
+                        type="checkbox" 
                         id="mantemDescricao" 
                         checked={mantemDescricao}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => configuraManterDescricao(event.target.checked, informaHorariosCalculo)} 
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => configuraDados(descricaoObrigatoria, event.target.checked, informaHorariosCalculo)} 
                     />
                     <label className="form-check-label" htmlFor="mantemDescricao">Manter descrição ao adicionar horário</label>
                 </div>
@@ -96,9 +113,9 @@ function ConfigModal(props: Props) {
                         type="checkbox" 
                         id="informaHorariosCalculo" 
                         checked={informaHorariosCalculo}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => configuraManterDescricao(mantemDescricao, event.target.checked)} 
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => configuraDados(descricaoObrigatoria ,mantemDescricao, event.target.checked)} 
                     />
-                    <label className="form-check-label" htmlFor="mantemDescricao">Informar horários para calcular hora <br /><span style={{fontSize: "10px", color: "#dd0000"}}>(recarregue a página para atualizar)</span></label>
+                    <label className="form-check-label" htmlFor="mantemDescricao">Informar horários para calcular hora</label>
                 </div>
             </div>
             <div className="modal-footer">
