@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const ComprovantePDF = ({ horarios }: { horarios: Horario[] }) => {
+const ComprovantePDF = ({ horarios, usuNome }: { horarios: Horario[], usuNome: string }) => {
   //if (horarios.length > 0) {
 
     let totalHoras = 0;
@@ -67,6 +67,7 @@ const ComprovantePDF = ({ horarios }: { horarios: Horario[] }) => {
         <Page size="A4" style={styles.page}>
           <View style={styles.section}>
             <Text style={styles.header}>Comprovante de Horas Trabalhadas</Text>
+            <Text style={{ fontSize: 20, marginBottom: 15, textAlign: "center" }}>{usuNome}</Text>
             <Text style={{ fontSize: 14, marginBottom: 10, textAlign: "center" }}>
               Total: {totalHoras} hora{totalHoras !== 1 ? "s" : ""} e {totalMinutos} minuto{totalMinutos !== 1 ? "s" : ""}
             </Text>
@@ -117,17 +118,25 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
   const [totalFilteredHoras, setTotalFilteredHoras] = useState(0);
   const [totalFilteredMinutos, setTotalFilteredMinutos] = useState(0);
   const [consultaFeita, setConsultaFeita] = useState(false);
+  const [mesPDF, setMesPDF] = useState('');
+  const [anoPDF, setAnoPDF] = useState('');
+  const [nomeUsuario, setNomeUsuario] = useState('');
   const email = cachedEmail ?? props.email;
+
   
   // Função para filtrar os registros e calcular o total de horas e minutos
   const handleFiltroRegistros = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    
     const mes = document.querySelector('#mes') as HTMLInputElement;
     const ano = document.querySelector('#ano') as HTMLInputElement;
-
+    
     const mesInt = parseInt(mes.value);
     const anoInt = parseInt(ano.value);
+    
+    setNomeUsuario(localStorage.getItem("cachedUsuNome") ?? '');  
+    setMesPDF(mesInt < 10 ? '0' + String(mesInt) : String(mesInt));
+    setAnoPDF(String(anoInt));
 
     if (mesInt < 1 || mesInt > 12 || isNaN(mesInt)) {
       setErroMes(true);
@@ -289,8 +298,8 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
             </div>
             { horarios.length > 0 && (
               <PDFDownloadLink
-              document={<ComprovantePDF horarios={horarios} />}
-              fileName="comprovante-horas.pdf"
+              document={<ComprovantePDF horarios={horarios} usuNome={nomeUsuario} />}
+              fileName={`horas-${nomeUsuario}-${mesPDF}-${anoPDF}`}
               style={{ textDecoration: "none" }}
               >
               {({ loading }) =>
