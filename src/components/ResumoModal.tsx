@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../config/firestore.ts";
 import HorarioAdicionado from "./HorarioAdicionado.tsx";
@@ -12,6 +13,92 @@ interface Horario {
   hora: string;
   minuto: string;
 }
+
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 30,
+    fontFamily: "Helvetica"
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center"
+  },
+  total: {
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: "center"
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderBottom: "1px solid #ccc",
+    paddingVertical: 4,
+    fontSize: 12,
+  },
+  cell: {
+    width: "25%"
+  }
+});
+
+const ComprovantePDF = ({ horarios }: { horarios: Horario[] }) => {
+  //if (horarios.length > 0) {
+
+    let totalHoras = 0;
+    let totalMinutos = 0;
+    
+    horarios.forEach(h => {
+      totalHoras += parseInt(h.hora) || 0;
+      totalMinutos += parseInt(h.minuto) || 0;
+    });
+    
+    const horasExtras = Math.floor(totalMinutos / 60);
+    totalHoras += horasExtras;
+    totalMinutos = totalMinutos % 60;
+    
+    return (
+      <Document>
+        <Page size="A4" style={styles.page}>
+          <View style={styles.section}>
+            <Text style={styles.header}>Comprovante de Horas Trabalhadas</Text>
+            <Text style={{ fontSize: 14, marginBottom: 10, textAlign: "center" }}>
+              Total: {totalHoras} hora{totalHoras !== 1 ? "s" : ""} e {totalMinutos} minuto{totalMinutos !== 1 ? "s" : ""}
+            </Text>
+
+            <Text style={{ fontSize: 16, fontWeight: "bold", marginTop: 20, marginBottom: 10 }}>
+              Detalhamento:
+            </Text>
+
+            {horarios.map((h, i) => (
+              <View
+              key={i}
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                paddingVertical: 4,
+                fontSize: 12,
+              }}
+              >
+              <View style={styles.row}>
+                <Text style={styles.cell}>{h.date}</Text>
+                <Text style={styles.cell}>{h.time}</Text>
+                <Text style={styles.cell}>{`${h.hora}h ${h.minuto}min`}</Text>
+                <Text style={styles.cell}>{h.observacao || "-"}</Text>
+              </View>
+              </View>
+            ))}
+          </View>
+        </Page>
+      </Document>
+    );  
+  //}
+};
 
 interface ResumoModalProps {
   isOpen: boolean;
@@ -90,6 +177,12 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
             parseInt(month) === mesInt
           );
         });
+
+      filteredHorarios.sort((a, b) => {
+        const dataA = new Date(a.date.split("/").reverse().join("/") + " " + a.time);
+        const dataB = new Date(b.date.split("/").reverse().join("/") + " " + b.time);
+        return dataA.getTime() - dataB.getTime();
+      });
 
       setHorarios(filteredHorarios);
       setConsultaFeita(true);
@@ -194,6 +287,19 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
                 Total: {totalFilteredHoras} hora{totalFilteredHoras !== 1 ? "s" : ""} e {totalFilteredMinutos} minuto{totalFilteredMinutos !== 1 ? "s" : ""}
               </strong>
             </div>
+            { horarios.length > 0 && (
+              <PDFDownloadLink
+              document={<ComprovantePDF horarios={horarios} />}
+              fileName="comprovante-horas.pdf"
+              style={{ textDecoration: "none" }}
+              >
+              {({ loading }) =>
+                <button type="button" className="btn btn-success">
+                  {loading ? "Gerando PDF..." : "Exportar"}
+                </button>
+              }
+            </PDFDownloadLink>
+            )}
             <button type="button" className="btn btn-secondary" onClick={props.onClose}>
               Fechar
             </button>

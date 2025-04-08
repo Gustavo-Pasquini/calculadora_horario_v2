@@ -21,6 +21,7 @@ interface Horario {
 }
 
 function App() {
+  const [loadingHorarios, setLoadingHorarios] = useState(false);
   const [mostrarResumo, setMostrarResumo] = useState(false);
   const [mostrarConfig, setMostrarConfig] = useState(false);
   const [horarios, setHorarios] = useState<Horario[]>([]);
@@ -46,6 +47,9 @@ function App() {
     setTotalHoras("0");
     setTotalMinutos("0");
     try {
+
+      setLoadingHorarios(true);
+
       const q = query(
         collection(db, "horario"),
         where("email", "==", cachedEmail ?? email)
@@ -75,6 +79,13 @@ function App() {
             itemDate.getMonth() === targetDate.getMonth()
           );
         });
+
+      filteredHorarios.sort((a, b) => {
+        const dataA = new Date(a.date.split("/").reverse().join("/") + " " + a.time);
+        const dataB = new Date(b.date.split("/").reverse().join("/") + " " + b.time);
+        return dataB.getTime() - dataA.getTime(); 
+      });  
+
       setHorarios(filteredHorarios);
       let totalMinutosAntigos = 0;
       let totalHorasAntigas = 0;
@@ -90,6 +101,8 @@ function App() {
     } catch (error) {
       console.error("Erro ao buscar horários:", error);
     }
+
+    setLoadingHorarios(false);
   };
 
   useEffect(() => {
@@ -116,13 +129,13 @@ function App() {
             minuto: minuto ?? ''
           });
           setHorarios((prevHorarios) => [
-            ...prevHorarios,
             { id: docRef.id, observacao, email, date, time, hora, minuto },
+          ...prevHorarios,
           ]);
         } else {
           setHorarios((prevHorarios) => [
-            ...prevHorarios,
             { id: '', observacao, email, date, time, hora, minuto },
+          ...prevHorarios,
           ]);
         }
         const totalMinutosAntigos = totalMinutos === "" ? 0 : parseInt(totalMinutos);
@@ -203,6 +216,12 @@ function App() {
           setMostrarResumo={setMostrarResumo}
           setMostrarConfig={setMostrarConfig}
         />
+        { loadingHorarios && (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <span>Carregando os dados...</span>
+          </div>
+        )}
         {widthDimension >= 700 && horarios.length > 0 ? (
           <div className="row">
             <div className="col">
@@ -227,6 +246,12 @@ function App() {
           </div>
         ) : (
           <div>
+            <div className="mb-5">
+              <Totalizador
+                totalHoras={totalHoras === "" ? "0" : totalHoras}
+                totalMinutos={totalMinutos === "" ? "0" : totalMinutos}
+                />
+            </div>
             {horarios.map((horario, index) => (
               <HorarioAdicionado
                 key={index}
@@ -238,10 +263,6 @@ function App() {
                 onRemove={() => handleRemove(index)}
               />
             ))}
-            <Totalizador
-              totalHoras={totalHoras === "" ? "0" : totalHoras}
-              totalMinutos={totalMinutos === "" ? "0" : totalMinutos}
-            />
           </div>
         )}
         {mostrarResumo && (

@@ -213,6 +213,7 @@ function EntradaDados(props: Props) {
       mantemDescricao || !email && setObservacao('');
   }
 
+  const [descricaoObrigatoria, setdescricaoObrigatoria] = useState(false);
   const [mantemDescricao, setMantemDescricao] = useState(false);
   const [informaHorariosCalculo, setInformaHorariosCalculo] = useState(false);
   const verificaConfiguracao = async () => {
@@ -227,6 +228,7 @@ function EntradaDados(props: Props) {
         
         const querySnapshot = await getDocs(q);
         
+        setdescricaoObrigatoria(querySnapshot.docs[0].data().descricaoObrigatoria);
         setMantemDescricao(querySnapshot.docs[0].data().mantemDescricao);
         setInformaHorariosCalculo(querySnapshot.docs[0].data().informaHorariosCalculo);
         
@@ -278,6 +280,7 @@ function EntradaDados(props: Props) {
               placeholder="Descrição"
               value={observacao}
               onChange={handleObservacaoSubmit}
+              required={descricaoObrigatoria}
             />
           </div>
         </div>
