@@ -5,7 +5,7 @@ function Footer() {
   return (
 
     <>
-      <footer className="text-center bg-success" style={{marginTop: "50px", width: "100%"}}>
+      <footer className="text-center bg-success" style={{width: "100%"}}>
       <div className="container pt-4">
           {/*Social Media*/}
         <section className="mb-4">

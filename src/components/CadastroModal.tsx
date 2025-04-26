@@ -1,8 +1,8 @@
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../config/firestore.ts'
+import bcrypt from "bcryptjs-react";
 import { useState } from 'react';
 import '../global.css';
-//import firebase from 'firebase/compat/app';
 
 interface Props {
     onClose: () => void;
@@ -40,11 +40,15 @@ interface Props {
         setErroSenha(false)
       }
 
+      const saltRounds = import.meta.env.VITE_SALT_ROUNDS;
+
+      const senhaCript = bcrypt.hashSync(senha.value, saltRounds);
+
       try {
         await addDoc(collection(db, "usuario"), {
           nome: nome?.value ?? '',
           email: email?.value ?? '',
-          senha: senha?.value ?? '',
+          senha: senhaCript ?? '',
           mantemDescricao: false
         });
         //console.log("Foi enviado!");

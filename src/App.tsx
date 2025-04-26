@@ -1,4 +1,3 @@
-// App.tsx
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "./config/firestore";
 import { useEffect, useState } from "react";
@@ -9,6 +8,7 @@ import Totalizador from "./components/Totalizador";
 import ResumoModal from "./components/ResumoModal";
 import Footer from "./components/Footer";
 import ConfigModal from "./components/ConfigModal";
+import Header from "./components/Header";
 
 interface Horario {
   id: any;
@@ -203,10 +203,9 @@ function App() {
     }
   };
 
-  return (
+  return (  
     <div className="app-container">
-      <div className="content">
-        <EntradaDados
+        <Header
           getEmail={handleEmail}
           onButtonClick={handleButtonClick}
           onLogin={handleLogin}
@@ -222,9 +221,10 @@ function App() {
             <span>Carregando os dados...</span>
           </div>
         )}
-        {widthDimension >= 700 && horarios.length > 0 ? (
+      <div className="content">
+        {widthDimension >= 1000 && horarios.length > 0 ? (
           <div className="row">
-            <div className="col">
+            <div className="col horarios">
               {horarios.map((horario, index) => (
                 <HorarioAdicionado
                   key={index}
@@ -237,6 +237,18 @@ function App() {
                 />
               ))}
             </div>
+            <div className="col-md-auto">
+            <EntradaDados
+              getEmail={handleEmail}
+              onButtonClick={handleButtonClick}
+              onLogin={handleLogin}
+              onCadastro={handleCadastro}
+              setTotalHoras={setTotalHoras}
+              setTotalMinutos={setTotalMinutos}
+              setMostrarResumo={setMostrarResumo}
+              setMostrarConfig={setMostrarConfig}
+            />
+            </div>
             <div className="col">
               <Totalizador
                 totalHoras={totalHoras === "" ? "0" : totalHoras}
@@ -246,6 +258,18 @@ function App() {
           </div>
         ) : (
           <div>
+            <div>
+              <EntradaDados
+                getEmail={handleEmail}
+                onButtonClick={handleButtonClick}
+                onLogin={handleLogin}
+                onCadastro={handleCadastro}
+                setTotalHoras={setTotalHoras}
+                setTotalMinutos={setTotalMinutos}
+                setMostrarResumo={setMostrarResumo}
+                setMostrarConfig={setMostrarConfig}
+              />
+            </div>
             <div className="mb-5">
               <Totalizador
                 totalHoras={totalHoras === "" ? "0" : totalHoras}

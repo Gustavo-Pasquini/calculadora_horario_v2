@@ -1,5 +1,6 @@
 import { collection, query, where, getDocs } from "firebase/firestore"
 import { db } from '../config/firestore.ts'
+import bcrypt from "bcryptjs-react";
 import { useState } from "react";
 
 interface Props {
@@ -33,7 +34,11 @@ function LoginModal  (props : Props) {
 
     for (const doc of querySnapshot.docs) {
       
-      if (doc.data().senha !== senha.value) {
+      const validaSenha = bcrypt.compareSync(senha.value, doc.data().senha);
+
+      console.log(validaSenha);
+
+      if (doc.data().senha !== senha.value && !validaSenha) {
         setsenhaInvalida(true);
         return;
       } else {
