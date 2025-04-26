@@ -38,7 +38,7 @@ function LoginModal  (props : Props) {
 
       console.log(validaSenha);
 
-      if (doc.data().senha !== senha.value && !validaSenha) {
+      if (!validaSenha) {
         setsenhaInvalida(true);
         return;
       } else {
