@@ -25,7 +25,6 @@ header {
     overflow-y: auto;
     min-height: 0;
     max-height: 100%;
-    padding: 1rem;
   }
 
   .row {
