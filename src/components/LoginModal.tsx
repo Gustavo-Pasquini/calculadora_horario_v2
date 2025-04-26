@@ -11,13 +11,15 @@ interface Props {
 }
 
 function LoginModal  (props : Props) {
-
+  const [carregando, setCarregando] = useState(false);
   const [ emailInvalido, setEmailInvalido ] = useState(false)
   const [ senhaInvalida, setsenhaInvalida ] = useState(false)
   
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {  
     e.preventDefault();
     
+    setCarregando(true);
+
     const email = document.querySelector('#login-email') as HTMLInputElement;
     const senha = document.querySelector('#login-senha') as HTMLInputElement;
 
@@ -27,6 +29,7 @@ function LoginModal  (props : Props) {
 
     if (querySnapshot.empty){
       setEmailInvalido(true);
+      setCarregando(false);
       return;
     } else {
       setEmailInvalido(false);
@@ -36,10 +39,9 @@ function LoginModal  (props : Props) {
       
       const validaSenha = bcrypt.compareSync(senha.value, doc.data().senha);
 
-      console.log(validaSenha);
-
       if (!validaSenha) {
         setsenhaInvalida(true);
+        setCarregando(false);
         return;
       } else {
         setsenhaInvalida(false);
@@ -52,6 +54,7 @@ function LoginModal  (props : Props) {
       localStorage.setItem("cachedUsuNome", usuNome)
     }
     
+    setCarregando(false);
 
     props.onConfirm();
   }
@@ -60,10 +63,10 @@ function LoginModal  (props : Props) {
   return (
     <>
       <div
-      className="modal show d-block"
-      tabIndex={-1}
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-    >
+        className="modal show d-block"
+        tabIndex={-1}
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      >
       <form onSubmit={handleLogin}>
         <div className="modal-dialog">
           <div className="modal-content">
@@ -86,6 +89,7 @@ function LoginModal  (props : Props) {
                 className="btn-close"
                 aria-label="Close"
                 onClick={props.onClose}
+                disabled={carregando}
               ></button>
             </div>
             <div className="modal-body" style={{display: "grid"}}>
@@ -103,14 +107,24 @@ function LoginModal  (props : Props) {
                 type="button"
                 className="btn btn-secondary"
                 onClick={props.onClose}
+                disabled={carregando}
                 >
                 Cancelar
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
+                disabled={carregando}
                 >
-                Fazer Login
+                { carregando ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Logando
+                    </>
+                  )
+                :
+                  "Fazer Login"
+                }
               </button>
             </div>
           </div>

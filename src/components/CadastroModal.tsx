@@ -10,13 +10,14 @@ interface Props {
   }
   
   function CadastroModal (props : Props) {
-  
+    const [carregando, setCarregando] = useState(false);
     const [ erroSenha, setErroSenha ] = useState(false)
     const [ emailExistente, setEmailExistente ] = useState(false)
 
     const handleCadastro = async (e: React.FormEvent<HTMLFormElement>) => {  
       e.preventDefault();
 
+      setCarregando(true)
       
       const nome = document.querySelector('#cadastro-nome') as HTMLInputElement
       const email = document.querySelector('#cadastro-email') as HTMLInputElement
@@ -25,22 +26,25 @@ interface Props {
 
       const q = query(collection(db, "usuario"), where("email", "==", email.value));
       const querySnapshot = await getDocs(q);
+
   
       if (!querySnapshot.empty){
         setEmailExistente(true);
+        setCarregando(false);
         return;
       } else {
         setEmailExistente(false);
       }
 
       if (confSenha.value !== senha.value) {
-        setErroSenha(true)
+        setErroSenha(true);
+        setCarregando(false);
         return;
       } else {
-        setErroSenha(false)
+        setErroSenha(false);
       }
 
-      const saltRounds = import.meta.env.VITE_SALT_ROUNDS;
+      const saltRounds = Number(import.meta.env.VITE_SALT_ROUNDS);
 
       const senhaCript = bcrypt.hashSync(senha.value, saltRounds);
 
@@ -56,6 +60,8 @@ interface Props {
       } catch (error) {
         console.log(error);
       }
+
+      setCarregando(false);
       
       props.onConfirm();
     }
@@ -91,6 +97,7 @@ interface Props {
                   className="btn-close"
                   aria-label="Close"
                   onClick={props.onClose}
+                  disabled={carregando}
                 ></button>
               </div>
               <div className="modal-body" style={{display: "grid"}}>
@@ -116,14 +123,24 @@ interface Props {
                   type="button"
                   className="btn btn-secondary"
                   onClick={props.onClose}
+                  disabled={carregando}
                   >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   className="btn btn-primary"
+                  disabled={carregando}
                   >
-                  Fazer Cadastro
+                  { carregando ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Cadastrando
+                    </>
+                    )
+                  :
+                    "Fazer Cadastro"
+                  }
                 </button>
               </div>
             </div>
