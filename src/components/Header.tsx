@@ -36,7 +36,7 @@ export function Perfil(props: PerfilProps) {
 
   return (
     <>
-      <div className="profile-image" style={{ backgroundColor, cursor: "pointer" }} onClick={handleUserClick}> 
+      <div className="profile-image" style={{ backgroundColor, cursor: "pointer" }} onClick={handleUserClick}>
         {inicial}
       </div>
       {ajusteUsuario && (
@@ -46,33 +46,33 @@ export function Perfil(props: PerfilProps) {
               Olá, {cachedNome ?? props.nome}
             </p>
           </div>
-          <button 
-            className="btn" 
-            type="button" 
-            onClick={() => props.setMostrarResumo(true)} 
+          <button
+            className="btn"
+            type="button"
+            onClick={() => props.setMostrarResumo(true)}
             style={{ display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none" }}
           >
-            Visualizar Horários  
-            <img src="/assets/clock.svg" alt="Clock"/>
-          </button> 
-          <button 
-            className="btn" 
-            type="button" 
-            onClick={() => props.setMostrarConfig(true)} 
+            Visualizar Horários
+            <img src="/assets/clock.svg" alt="Clock" />
+          </button>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => props.setMostrarConfig(true)}
             style={{ display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none" }}
           >
-            Opções  
-            <img style={{width: "20px"}} src="/assets/settings-svgrepo-com.svg" alt="Exit"/>
-          </button> 
-          <button 
-            className="btn" 
-            type="button" 
-            onClick={props.isLogado} 
+            Opções
+            <img style={{ width: "20px" }} src="/assets/settings-svgrepo-com.svg" alt="Exit" />
+          </button>
+          <button
+            className="btn"
+            type="button"
+            onClick={props.isLogado}
             style={{ display: "flex", width: "100%", justifyContent: "space-between", color: "black", border: "none" }}
           >
-            Sair  
-            <img src="/assets/exit-svgrepo-com.svg" alt="Exit"/>
-          </button> 
+            Sair
+            <img src="/assets/exit-svgrepo-com.svg" alt="Exit" />
+          </button>
         </div>
       )}
     </>
@@ -89,7 +89,7 @@ function Header(props: Props) {
 
   const handleLoginClick = () => setShowLogin(true);
   const handleCloseLogin = () => setShowLogin(false);
-  
+
   const cachedEmail = localStorage.getItem("cachedEmail");
 
   useEffect(() => {
@@ -102,15 +102,15 @@ function Header(props: Props) {
     setIsLogado(true);
     setShowLogin(false);
   };
-  
+
   const [showCadastro, setShowCadastro] = useState(false);
   const handleCadastroClick = () => setShowCadastro(true);
   const handleCloseCadastro = () => setShowCadastro(false);
   const handleCadastro = () => {
     props.onCadastro();
     setShowCadastro(false);
-  };  
-  
+  };
+
   const handleExit = () => {
     setIsLogado(false);
     localStorage.removeItem("cachedEmail");
@@ -120,11 +120,11 @@ function Header(props: Props) {
     props.setTotalHoras("0");
     props.setTotalMinutos("0");
   };
-  
+
   function handleUsuNome(usuNome: string) {
     setUsuNome(usuNome);
   }
-  
+
   function handleEmail(email: string) {
     setEmail(email);
     props.getEmail(email);
@@ -133,29 +133,29 @@ function Header(props: Props) {
   return (
 
     <>
-      <header className="text-bg-success p-4 mb-5" style={{display: "grid", gridTemplateColumns: "1fr auto 1fr", margin: "auto", justifyContent: "space-between", alignItems: "center", position: "relative"}}>
+      <header className="text-bg-success p-4 mb-5" style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", margin: "auto", justifyContent: "space-between", alignItems: "center", position: "relative" }}>
         <div>
           {isLogado && (
             <div style={{ alignContent: "center" }}>
-              <Perfil nome={usuNome} isLogado={handleExit} setMostrarResumo={props.setMostrarResumo} setMostrarConfig={props.setMostrarConfig}/>
+              <Perfil nome={usuNome} isLogado={handleExit} setMostrarResumo={props.setMostrarResumo} setMostrarConfig={props.setMostrarConfig} />
             </div>
           )}
         </div>
-          <h2 style={{ margin: "20px", textAlign: "center", justifySelf: "center" }}>Calculadora de Horários:</h2>
+        <h2 style={{ margin: "20px", textAlign: "center", justifySelf: "center" }}>Calculadora de Horários:</h2>
         <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexDirection: "column" }}>
-          {!isLogado && 
+          {!isLogado &&
             <button type="button" className="btn btn-light" style={{ width: "100px" }} onClick={handleLoginClick}>
               Login
             </button>
           }
-          {!isLogado && 
+          {!isLogado &&
             <button type="button" className="btn btn-primary" style={{ width: "100px" }} onClick={handleCadastroClick}>
               Cadastro
             </button>
           }
         </div>
       </header>
-      {showLogin && 
+      {showLogin &&
         <LoginModal
           getEmail={handleEmail}
           getUsuNome={handleUsuNome}
@@ -163,8 +163,8 @@ function Header(props: Props) {
           onConfirm={handleLogin}
         />
       }
-      {showCadastro && 
-        <CadastroModal 
+      {showCadastro &&
+        <CadastroModal
           onClose={handleCloseCadastro}
           onConfirm={handleCadastro}
         />

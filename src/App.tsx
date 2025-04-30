@@ -83,8 +83,8 @@ function App() {
       filteredHorarios.sort((a, b) => {
         const dataA = new Date(a.date.split("/").reverse().join("/") + " " + a.time);
         const dataB = new Date(b.date.split("/").reverse().join("/") + " " + b.time);
-        return dataB.getTime() - dataA.getTime(); 
-      });  
+        return dataB.getTime() - dataA.getTime();
+      });
 
       setHorarios(filteredHorarios);
       let totalMinutosAntigos = 0;
@@ -122,7 +122,7 @@ function App() {
         if (email) {
           const docRef = await addDoc(collection(db, "horario"), {
             observacao: observacao ?? '',
-            email: cachedEmail ?? email ??'',
+            email: cachedEmail ?? email ?? '',
             date: date ?? '',
             time: time ?? '',
             hora: hora ?? '',
@@ -130,12 +130,12 @@ function App() {
           });
           setHorarios((prevHorarios) => [
             { id: docRef.id, observacao, email, date, time, hora, minuto },
-          ...prevHorarios,
+            ...prevHorarios,
           ]);
         } else {
           setHorarios((prevHorarios) => [
             { id: '', observacao, email, date, time, hora, minuto },
-          ...prevHorarios,
+            ...prevHorarios,
           ]);
         }
         const totalMinutosAntigos = totalMinutos === "" ? 0 : parseInt(totalMinutos);
@@ -203,24 +203,24 @@ function App() {
     }
   };
 
-  return (  
+  return (
     <div className="app-container">
-        <Header
-          getEmail={handleEmail}
-          onButtonClick={handleButtonClick}
-          onLogin={handleLogin}
-          onCadastro={handleCadastro}
-          setTotalHoras={setTotalHoras}
-          setTotalMinutos={setTotalMinutos}
-          setMostrarResumo={setMostrarResumo}
-          setMostrarConfig={setMostrarConfig}
-        />
-        { loadingHorarios && (
-          <div className="loading-container">
-            <div className="spinner"></div>
-            <span>Carregando os dados...</span>
-          </div>
-        )}
+      <Header
+        getEmail={handleEmail}
+        onButtonClick={handleButtonClick}
+        onLogin={handleLogin}
+        onCadastro={handleCadastro}
+        setTotalHoras={setTotalHoras}
+        setTotalMinutos={setTotalMinutos}
+        setMostrarResumo={setMostrarResumo}
+        setMostrarConfig={setMostrarConfig}
+      />
+      {loadingHorarios && (
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <span>Carregando os dados...</span>
+        </div>
+      )}
       <div className="content">
         {widthDimension >= 1000 && horarios.length > 0 ? (
           <div className="row">
@@ -238,16 +238,16 @@ function App() {
               ))}
             </div>
             <div className="col-md-auto">
-            <EntradaDados
-              getEmail={handleEmail}
-              onButtonClick={handleButtonClick}
-              onLogin={handleLogin}
-              onCadastro={handleCadastro}
-              setTotalHoras={setTotalHoras}
-              setTotalMinutos={setTotalMinutos}
-              setMostrarResumo={setMostrarResumo}
-              setMostrarConfig={setMostrarConfig}
-            />
+              <EntradaDados
+                getEmail={handleEmail}
+                onButtonClick={handleButtonClick}
+                onLogin={handleLogin}
+                onCadastro={handleCadastro}
+                setTotalHoras={setTotalHoras}
+                setTotalMinutos={setTotalMinutos}
+                setMostrarResumo={setMostrarResumo}
+                setMostrarConfig={setMostrarConfig}
+              />
             </div>
             <div className="col">
               <Totalizador
@@ -274,7 +274,7 @@ function App() {
               <Totalizador
                 totalHoras={totalHoras === "" ? "0" : totalHoras}
                 totalMinutos={totalMinutos === "" ? "0" : totalMinutos}
-                />
+              />
             </div>
             {horarios.map((horario, index) => (
               <HorarioAdicionado
@@ -294,14 +294,14 @@ function App() {
             isOpen={mostrarResumo}
             onClose={() => setMostrarResumo(false)}
             email={email}
-          />   
+          />
         )}
         {mostrarConfig && (
           <ConfigModal
-          isOpen={mostrarConfig}
-          onClose={() => setMostrarConfig(false)}
-          email={email}
-        />
+            isOpen={mostrarConfig}
+            onClose={() => setMostrarConfig(false)}
+            email={email}
+          />
         )}
       </div>
       <Footer />

@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -8,6 +10,27 @@ html {
   overflow-x: hidden;
   width: 100vw;
 }
+
+/* Esconde o "track" (fundo da barra de rolagem) */
+::-webkit-scrollbar {
+  width: 8px;
+  /* ou height: 8px; para scroll horizontal */
+  background: transparent;
+  /* invisível */
+}
+
+/* Personaliza o "thumb" (a parte que você arrasta) */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  /* cor semi-transparente */
+  border-radius: 4px;
+}
+
+/* Opcional: remove completamente o fundo do thumb ao parar o hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 
 .app-container {
   display: flex;
@@ -74,6 +97,11 @@ footer {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
