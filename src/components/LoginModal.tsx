@@ -1,7 +1,8 @@
-import { collection, query, where, getDocs } from "firebase/firestore"
+import { collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore"
 import { db } from '../config/firestore.ts'
 import bcrypt from "bcryptjs-react";
 import { useState } from "react";
+import emailjs from '@emailjs/browser';
 
 interface Props {
   onClose: () => void;
@@ -59,6 +60,64 @@ function LoginModal  (props : Props) {
     props.onConfirm();
   }
 
+  const redefinirSenha = async () => {
+    if(carregando)
+      return;
+
+    setCarregando(true);
+
+    const email = document.querySelector('#login-email') as HTMLInputElement;
+
+    const q = query(collection(db, "usuario"), where("email", "==", email.value));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      alert("Digite um email válido no campo Email!");
+      setCarregando(false);
+      return;
+    }
+
+    const chars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y", "z", "d", "A", "B", "C", "D", "X", "Y", "Z", "@", "!", "&", "#"]
+    let novaSenha = ""
+    for (let i = 0; i < 10; i++) {
+      const passwordChar = Math.floor(Math.random() * chars.length);
+      novaSenha += chars[passwordChar];
+    }
+
+    const nome  = querySnapshot.docs[0].data().nome;
+
+    const saltRounds = Number(import.meta.env.VITE_SALT_ROUNDS);
+    const novaSenhaCript = bcrypt.hashSync(novaSenha, saltRounds);
+
+    
+    emailjs.send(
+      import.meta.env.VITE_SERVICE_ID,
+      import.meta.env.VITE_TEMPLATE_ID,
+      {
+        novaSenha,
+        email: email.value,
+        nome,
+      },
+      import.meta.env.VITE_PUBLIC_KEY
+      ).then(() => {
+        alert(`Nova senha enviada para ${email.value}`);
+      }).catch((err) => {
+        console.error('Erro ao enviar:', err);
+        setCarregando(false);
+      });
+
+      try {
+        await updateDoc(doc(db, "usuario", querySnapshot.docs[0].id) , {
+          senha: novaSenhaCript
+      });
+      } catch (error) {
+        console.log(error);
+        setCarregando(false);
+      }
+
+      setCarregando(false);
+    }
+    
 
   return (
     <>
@@ -92,40 +151,46 @@ function LoginModal  (props : Props) {
                 disabled={carregando}
               ></button>
             </div>
-            <div className="modal-body" style={{display: "grid"}}>
-              <div style={{display: "grid"}}>
-                <label htmlFor="email" className="mb-2">Digite seu email:</label>
-                <input id="login-email" name="email" type="email" placeholder="Email" className="form-control mb-3" required/>
+              <div className="modal-body" style={{display: "grid"}}>
+                <div style={{display: "grid"}}>
+                  <label htmlFor="email" className="mb-2">Digite seu email:</label>
+                  <input id="login-email" name="email" type="email" placeholder="Email" className="form-control mb-3" required/>
+                </div>
+                <div style={{display: "grid"}}>
+                <label htmlFor="senha" className="mb-2">Digite sua senha:</label>
+                <input id="login-senha" name="senha" type="password" placeholder="Senha" className="form-control mb-3"/>
+                </div>
               </div>
-              <div style={{display: "grid"}}>
-              <label htmlFor="senha" className="mb-2">Digite sua senha:</label>
-              <input id="login-senha" name="senha" type="password" placeholder="Senha" className="form-control mb-3" required/>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={props.onClose}
-                disabled={carregando}
-                >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={carregando}
-                >
-                { carregando ? (
+              <div className="modal-footer d-flex" style={{justifyContent: "space-between"}}>
+                <div>
+                  <a href="#" style={{fontSize: "0.82rem"}} onClick={() => redefinirSenha()}>Esqueci minha senha!</a>
+                </div>
+                <div>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={props.onClose}
+                  disabled={carregando}
+                  style={{marginRight: "1rem"}}
+                  >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={carregando}
+                  >
+                  { carregando ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Logando
-                    </>
-                  )
-                :
-                  "Fazer Login"
-                }
-              </button>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Logando
+                      </>
+                    )
+                    :
+                    "Fazer Login"
+                  }
+                </button>
+              </div>
             </div>
           </div>
         </div>
