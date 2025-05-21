@@ -53,7 +53,7 @@ interface Props {
           nome: nome?.value ?? '',
           email: email?.value ?? '',
           senha: senhaCript ?? '',
-          mantemDescricao: false
+          mantemDescricao: false,
         });
         //console.log("Foi enviado!");
         //console.log("Document written with ID: ", docRef.id);

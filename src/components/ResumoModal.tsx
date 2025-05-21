@@ -12,6 +12,7 @@ interface Horario {
   time: string;
   hora: string;
   minuto: string;
+  editado: boolean;
 }
 
 
@@ -44,6 +45,11 @@ const styles = StyleSheet.create({
   },
   cell: {
     width: "25%"
+  },
+  cellEditado: {
+    width: "25%",
+    fontSize: 10,
+    color: "#777",
   }
 });
 
@@ -90,6 +96,7 @@ const ComprovantePDF = ({ horarios, usuNome }: { horarios: Horario[], usuNome: s
                 <Text style={styles.cell}>{h.date}</Text>
                 <Text style={styles.cell}>{h.time}</Text>
                 <Text style={styles.cell}>{`${h.hora}h ${h.minuto}min`}</Text>
+                <Text style={styles.cellEditado}>{h.editado ? "editado" : null}</Text>
                 <Text style={styles.cell}>{h.observacao || "-"}</Text>
               </View>
               </View>
@@ -164,7 +171,7 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
     
       const filteredHorarios: Horario[] = querySnapshot.docs
         .map(doc => {
-          const data = doc.data() as { observacao?: string; date?: string; time?: string; hora?: string; minuto?: string };
+          const data = doc.data() as { observacao?: string; date?: string; time?: string; hora?: string; minuto?: string, editado?: boolean };
           return { 
             id: doc.id,
             email, 
@@ -172,7 +179,8 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
             date: data.date ?? "", 
             time: data.time ?? "", 
             hora: data.hora ?? "", 
-            minuto: data.minuto ?? "" 
+            minuto: data.minuto ?? "",
+            editado: data.editado ?? false, 
           };
         })
         .filter(item => {
@@ -216,6 +224,11 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
       console.error("Erro ao buscar horários:", error);
     }
   };
+
+  const handleEdit = (index: number) => {
+
+    console.log(index);
+  }
 
   return (
     <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
@@ -278,12 +291,14 @@ const ResumoModal: React.FC<ResumoModalProps> = (props: ResumoModalProps) => {
           <div className="modal-body" style={{ overflow: "auto", maxHeight: "400px", display: "flex", flexWrap: "wrap"}}>
             {horarios.length > 0 || !(consultaFeita) ? horarios.map((horario, index) => (
               <HorarioAdicionado
+                id={horario.id}
                 key={index}
                 observacaoAdicionada={horario.observacao}
                 addedDate={horario.date}
                 addedTime={horario.time}
                 newHora={horario.hora}
                 newMinuto={horario.minuto}
+                onEdit={() => handleEdit(horario.id)}
               />
             ))
             :

@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, deleteDoc, doc/*, updateDoc*/ } from "firebase/firestore";
 import { db } from "./config/firestore";
 import { useEffect, useState } from "react";
 import "./App.css";
@@ -40,7 +40,25 @@ function App() {
 
   useEffect(() => {
     setHorarios([]);
+  //  adicionarCampoNovo();
   }, [email, cachedEmail]);
+
+  // const adicionarCampoNovo = async () => {
+  //   const querySnapshot = await getDocs(collection(db, "horario"));
+  
+  //   querySnapshot.forEach(async (documento) => {
+  //     const docRef = doc(db, "horario", documento.id);
+  
+  //     try {
+  //       await updateDoc(docRef, {
+  //         editado: false  // novo campo que será adicionado
+  //       });
+  //       console.log(`Campo adicionado ao documento ${documento.id}`);
+  //     } catch (error) {
+  //       console.error(`Erro ao atualizar o documento ${documento.id}:`, error);
+  //     }
+  //   });
+  // };
 
   const handleLogin = async (email: string) => {
     if (!(cachedEmail ?? email)) return;
@@ -126,7 +144,8 @@ function App() {
             date: date ?? '',
             time: time ?? '',
             hora: hora ?? '',
-            minuto: minuto ?? ''
+            minuto: minuto ?? '',
+            editado: false,
           });
           setHorarios((prevHorarios) => [
             { id: docRef.id, observacao, email, date, time, hora, minuto },
@@ -227,6 +246,7 @@ function App() {
             <div className="col horarios">
               {horarios.map((horario, index) => (
                 <HorarioAdicionado
+                  id={horario.id}
                   key={index}
                   observacaoAdicionada={horario.observacao}
                   addedDate={horario.date}
@@ -278,6 +298,7 @@ function App() {
             </div>
             {horarios.map((horario, index) => (
               <HorarioAdicionado
+                id={horario.id}
                 key={index}
                 observacaoAdicionada={horario.observacao}
                 addedDate={horario.date}
